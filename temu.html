@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0A2A66">
+  <title>Bertemu Guru BK — SIKOLAB BK</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="isi-body">
+  <div class="isi-wrap">
+    <div class="isi-head"><span class="logo-full sm" role="img" aria-label="Logo SIKOLAB BK"></span><div><b>SIKOLAB BK</b><span id="tm-sekolah">Layanan Bimbingan dan Konseling</span></div></div>
+    <div id="tm-card" class="auth-card isi-card"></div>
+    <p class="xs muted" style="text-align:center;margin-top:16px">Ceritamu hanya dibaca Guru BK. Dalam keadaan darurat, segera temui guru terdekat.</p>
+    <p class="kredit">SIKOLAB BK · Dikembangkan oleh Iwa Salji Elbi Satria, UPT SMPN 3 Batipuh</p>
+  </div>
+  <div id="toasts" aria-live="polite"></div>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script>
+'use strict';
+/* Formulir murid "Saya ingin bertemu Guru BK": tanpa akun, dijaga kode formulir + NIS. */
+var KODE_AWAL = (new URLSearchParams(location.search).get('kode') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+var ST = { kode: '', nis: '', info: null };
+function $(s, r) { return (r || document).querySelector(s); }
+function esc(s) { return String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function call(action, payload) {
+  return new Promise(function (resolve, reject) {
+    if (!(window.google && google.script && google.script.run)) { reject(new Error('Halaman ini harus dibuka dari tautan yang dibagikan Guru BK.')); return; }
+    google.script.run.withSuccessHandler(function (r) {
+      if (r && r.success) resolve(r.data); else reject(new Error((r && r.message) || 'Terjadi kesalahan.'));
+    }).withFailureHandler(function () { reject(new Error('Koneksi bermasalah. Coba lagi.')); }).api('', action, payload);
+  });
+}
+function busy(btn, on) { if (!btn) return; btn.disabled = on; btn.textContent = on ? 'Mohon tunggu…' : btn.dataset.t; }
+function galat(pesan) { var e = $('#tm-err'); if (!e) return; e.textContent = pesan || ''; e.classList.toggle('hide', !pesan); }
+
+function tampilMasuk(pesan) {
+  $('#tm-card').innerHTML = '<div class="a-kicker">Layanan BK untuk semua murid</div><h2>Ingin bertemu Guru BK?</h2>' +
+    '<p class="muted" style="margin-top:4px">Ceritakan apa saja: belajar, teman, keluarga, perasaan, atau rencana sekolah lanjutan. Masukkan kode formulir dan NIS-mu.</p>' +
+    '<form id="f-masuk" class="form-grid mt-16" novalidate>' +
+    '<div class="field"><label for="t-kode">Kode formulir</label><input class="input" id="t-kode" maxlength="12" autocomplete="off" autocapitalize="characters" placeholder="Dari poster atau Guru BK" value="' + esc(ST.kode || KODE_AWAL) + '"></div>' +
+    '<div class="field"><label for="t-nis">NIS</label><input class="input" id="t-nis" maxlength="20" autocomplete="off" placeholder="Nomor Induk Siswa" value="' + esc(ST.nis) + '"></div>' +
+    '</form><div id="tm-err" class="note rose mt-12 hide" role="alert"></div>' +
+    '<button class="btn primary block mt-16" id="t-go" data-t="Lanjut" style="height:48px;font-size:15px">Lanjut</button>';
+  galat(pesan);
+  var go = function () {
+    ST.kode = $('#t-kode').value.trim().toUpperCase(); ST.nis = $('#t-nis').value.trim();
+    if (!ST.kode || !ST.nis) { galat('Kode formulir dan NIS wajib diisi.'); return; }
+    var btn = $('#t-go'); busy(btn, true);
+    call('temu.cek', { kode: ST.kode, nis: ST.nis }).then(function (d) { ST.info = d; tampilForm(); })
+      .catch(function (e) { busy(btn, false); galat(e.message); });
+  };
+  $('#t-go').addEventListener('click', go);
+  $('#f-masuk').addEventListener('submit', function (e) { e.preventDefault(); go(); });
+  if (!ST.kode && KODE_AWAL) setTimeout(function () { $('#t-nis').focus(); }, 60);
+}
+
+function tampilForm() {
+  var d = ST.info;
+  if (d.sekolah) $('#tm-sekolah').textContent = d.sekolah;
+  $('#tm-card').innerHTML = '<div class="a-kicker">' + esc(d.kelas) + '</div><h2>Halo, ' + esc(d.nama.split(' ')[0]) + '</h2>' +
+    '<p class="muted" style="margin-top:4px">Bukan kamu? <a href="#" id="t-bukan">Kembali</a>. Isi seperlunya saja; Guru BK akan menemuimu.</p>' +
+    '<div class="field mt-16"><span class="flabel">Apa yang ingin kamu bicarakan? <span class="req">*</span></span><div class="if-list" id="t-topik">' +
+    d.topik.map(function (t) { return '<label class="if-opt"><input type="radio" name="topik" value="' + esc(t) + '"><span>' + esc(t) + '</span></label>'; }).join('') + '</div></div>' +
+    '<div class="field mt-12"><label for="t-cerita">Ceritakan singkat (boleh dikosongkan)</label><textarea class="textarea" id="t-cerita" rows="4" maxlength="1500" placeholder="Kamu boleh menulis sedikit atau tidak sama sekali."></textarea></div>' +
+    '<div class="field mt-12"><span class="flabel">Kapan kamu bisa bertemu?</span><div class="if-list" id="t-waktu">' +
+    d.waktu.map(function (w, i) { return '<label class="if-opt"><input type="radio" name="waktu" value="' + esc(w) + '"' + (i === d.waktu.length - 1 ? ' checked' : '') + '><span>' + esc(w) + '</span></label>'; }).join('') + '</div></div>' +
+    '<label class="if-check mt-12" style="border:1px solid var(--border);border-radius:12px;padding:12px"><input type="checkbox" id="t-segera"><span><b>Ini mendesak</b> — aku butuh bertemu secepatnya.</span></label>' +
+    '<div id="tm-err" class="note rose mt-12 hide" role="alert"></div>' +
+    '<button class="btn primary block mt-16" id="t-kirim" data-t="Kirim permintaan" style="height:48px;font-size:15px">Kirim permintaan</button>';
+  $('#t-bukan').addEventListener('click', function (e) { e.preventDefault(); ST.info = null; ST.nis = ''; tampilMasuk(''); });
+  $('#t-kirim').addEventListener('click', function () {
+    var tp = document.querySelector('input[name=topik]:checked'), wk = document.querySelector('input[name=waktu]:checked');
+    if (!tp) { galat('Pilih topik yang ingin dibicarakan.'); return; }
+    var btn = $('#t-kirim'); busy(btn, true); galat('');
+    call('temu.kirim', { kode: ST.kode, nis: ST.nis, topik: tp.value, waktu: wk ? wk.value : 'Kapan saja', cerita: $('#t-cerita').value.trim(), urgensi: $('#t-segera').checked ? 'Segera' : 'Biasa' })
+      .then(function (r) {
+        $('#tm-card').innerHTML = '<div class="a-kicker">Terkirim</div><h2>Terima kasih, ' + esc(r.nama) + '.</h2>' +
+          '<p class="muted mt-8">Permintaanmu sudah diterima Guru BK. Kamu akan dipanggil atau dihubungi lewat wali kelas sesuai waktu yang kamu pilih.</p>' +
+          '<div class="note info mt-16"><div>Bila keadaannya darurat atau kamu merasa tidak aman, jangan menunggu: segera temui guru terdekat atau datang ke ruang BK.</div></div>' +
+          '<p class="xs muted mt-16">Kamu boleh menutup halaman ini.</p>';
+        window.scrollTo(0, 0);
+      }).catch(function (e) { busy(btn, false); galat(e.message); });
+  });
+}
+tampilMasuk('');
+</script>
+</body>
+</html>

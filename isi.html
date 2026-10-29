@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0A2A66">
+  <title>Pengisian Instrumen — SIKOLAB BK</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="isi-body">
+  <div class="isi-wrap">
+    <div class="isi-head"><span class="logo-full sm" role="img" aria-label="Logo SIKOLAB BK"></span><div><b>SIKOLAB BK</b><span id="isi-sekolah">Pengisian instrumen Bimbingan dan Konseling</span></div></div>
+    <div id="isi-card" class="auth-card isi-card"></div>
+    <p class="xs muted" style="text-align:center;margin-top:16px">Jawabanmu dijaga kerahasiaannya dan hanya dibaca Guru BK.</p>
+    <p class="kredit">SIKOLAB BK · Dikembangkan oleh Iwa Salji Elbi Satria, UPT SMPN 3 Batipuh</p>
+  </div>
+  <div id="toasts" aria-live="polite"></div>
+  <script src="js/formisi.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script>
+'use strict';
+var KODE_AWAL = (new URLSearchParams(location.search).get('kode') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+var ST = { kode: '', nis: '', data: null };
+function $(s, r) { return (r || document).querySelector(s); }
+function esc(s) { return IsiForm.esc(s); }
+function toast(msg, type) {
+  var t = document.createElement('div'); t.className = 'toast ' + (type || ''); t.setAttribute('role', 'alert');
+  t.innerHTML = '<span>' + esc(msg) + '</span>'; $('#toasts').appendChild(t);
+  setTimeout(function () { t.remove(); }, 5000);
+}
+function call(action, payload) {
+  return new Promise(function (resolve, reject) {
+    if (!(window.google && google.script && google.script.run)) { reject(new Error('Halaman ini harus dibuka dari tautan yang dibagikan Guru BK.')); return; }
+    google.script.run.withSuccessHandler(function (r) {
+      if (r && r.success) resolve(r.data); else reject(new Error((r && r.message) || 'Terjadi kesalahan.'));
+    }).withFailureHandler(function (e) { reject(new Error('Koneksi bermasalah. Coba lagi.')); }).api('', action, payload);
+  });
+}
+function busy(btn, on) { if (!btn) return; btn.disabled = on; btn.textContent = on ? 'Mohon tunggu…' : btn.dataset.t; }
+function tampilMasuk(pesan) {
+  $('#isi-card').innerHTML = '<div class="a-kicker">Pengisian instrumen</div><h2>Masuk dengan kode dan NIS</h2>' +
+    '<p class="muted" style="margin-top:4px">Masukkan kode pengisian dari Guru BK dan NIS-mu.</p>' +
+    '<form id="f-masuk" class="form-grid mt-16" novalidate>' +
+    '<div class="field"><label for="i-kode">Kode pengisian</label><input class="input" id="i-kode" maxlength="12" autocomplete="off" autocapitalize="characters" placeholder="Contoh: K7M2QX" value="' + esc(ST.kode || KODE_AWAL) + '"></div>' +
+    '<div class="field"><label for="i-nis">NIS</label><input class="input" id="i-nis" maxlength="20" autocomplete="off" inputmode="text" placeholder="Nomor Induk Siswa" value="' + esc(ST.nis) + '"></div>' +
+    '</form><div id="i-err" class="note rose mt-12' + (pesan ? '' : ' hide') + '" role="alert">' + esc(pesan || '') + '</div>' +
+    '<button class="btn primary block mt-16" id="i-go" data-t="Lanjut" style="height:48px;font-size:15px">Lanjut</button>';
+  var go = function () {
+    ST.kode = $('#i-kode').value.trim().toUpperCase(); ST.nis = $('#i-nis').value.trim();
+    if (!ST.kode || !ST.nis) { tampilMasuk('Kode pengisian dan NIS wajib diisi.'); return; }
+    var btn = $('#i-go'); busy(btn, true);
+    call('isi.buka', { kode: ST.kode, nis: ST.nis }).then(function (d) { ST.data = d; tampilForm(); })
+      .catch(function (e) { tampilMasuk(e.message); });
+  };
+  $('#i-go').addEventListener('click', go);
+  $('#f-masuk').addEventListener('submit', function (e) { e.preventDefault(); go(); });
+}
+function tampilForm() {
+  var d = ST.data;
+  if (d.sekolah) $('#isi-sekolah').textContent = d.sekolah;
+  if (d.sudah) {
+    $('#isi-card').innerHTML = '<div class="a-kicker">Sudah terkirim</div><h2>Terima kasih, ' + esc(d.nama.split(' ')[0]) + '!</h2><p class="muted mt-8">Kamu sudah mengisi <b>' + esc(d.judul) + '</b>. Jawaban hanya dapat dikirim satu kali. Jika ada yang salah, sampaikan kepada Guru BK.</p>';
+    return;
+  }
+  $('#isi-card').innerHTML = '<div class="a-kicker">' + esc(d.kelas) + '</div><h2>' + esc(d.judul) + '</h2>' +
+    '<p class="muted" style="margin-top:4px">Halo, <b>' + esc(d.nama) + '</b>. ' + esc(d.deskripsi || '') + '</p>' +
+    '<div id="i-form" class="if-form mt-16">' + IsiForm.render(d.butir, d.rekan, {}) + '</div>' +
+    '<div id="i-err" class="note rose mt-12 hide" role="alert"></div>' +
+    '<button class="btn primary block mt-16" id="i-kirim" data-t="Kirim jawaban" style="height:48px;font-size:15px">Kirim jawaban</button>' +
+    '<button class="btn ghost block mt-8" id="i-batal">Bukan saya / kembali</button>';
+  IsiForm.bind($('#i-form'), function (mx) { toast('Paling banyak ' + mx + ' pilihan.', 'err'); });
+  $('#i-batal').addEventListener('click', function () { ST.data = null; tampilMasuk(''); });
+  $('#i-kirim').addEventListener('click', function () {
+    var r = IsiForm.read($('#i-form'), d.butir);
+    if (r.galat.length) { $('#i-err').textContent = 'Ada ' + r.galat.length + ' butir wajib yang belum diisi.'; $('#i-err').classList.remove('hide'); r.galat[0].el.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+    if (!Object.keys(r.jawab).length) { $('#i-err').textContent = 'Belum ada jawaban yang dipilih.'; $('#i-err').classList.remove('hide'); return; }
+    var btn = $('#i-kirim'); busy(btn, true);
+    call('isi.kirim', { kode: ST.kode, nis: ST.nis, jawaban: r.jawab }).then(function () {
+      $('#isi-card').innerHTML = '<div class="a-kicker">Selesai</div><h2>Terima kasih, ' + esc(d.nama.split(' ')[0]) + '!</h2><p class="muted mt-8">Jawabanmu sudah terkirim. Kamu boleh menutup halaman ini.</p>';
+      window.scrollTo(0, 0);
+    }).catch(function (e) { busy(btn, false); $('#i-err').textContent = e.message; $('#i-err').classList.remove('hide'); });
+  });
+}
+tampilMasuk('');
+</script>
+</body>
+</html>
