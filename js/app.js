@@ -9,7 +9,7 @@
    ============================================================ */
 
 // ── Util ──
-const PENGEMBANG = 'Iwa Salji Elbi Satria', PENGEMBANG_SEKOLAH = 'UPT SMPN 3 Batipuh', VERSI_APP = '1.9';
+const PENGEMBANG = 'Iwa Salji Elbi Satria', PENGEMBANG_SEKOLAH = 'UPT SMPN 3 Batipuh', VERSI_APP = '1.9.1';
 const $ = function (s, r) { return (r || document).querySelector(s); };
 // Pengaman: callback lama yang selesai setelah pengguna pindah halaman tidak boleh memunculkan galat.
 window.addEventListener('unhandledrejection', function (e) { const m = String(e.reason && e.reason.message || ''); if (/of null|of undefined/.test(m)) { e.preventDefault(); if (window.console) console.warn('[diabaikan]', m); } });
@@ -4546,22 +4546,42 @@ function pndQKey() { return 'sk_pq_' + (S.user ? S.user.email : ''); }
 function pndSimpanQ() { lstore(pndQKey(), JSON.stringify(PND.q)); }
 PAGES.pindai = function (params, tok) {
   try { PND.q = JSON.parse(lstore(pndQKey()) || '[]') || []; } catch (e) { PND.q = []; }
-  return api('pindai.siap').then(function (d) {
-    lstore('sk_pnd', JSON.stringify(d));
-    return d;
-  }).catch(function (e) {
-    // Sinyal putus: pakai daftar kartu terakhir di perangkat bila masih hari yang sama.
-    let c = null; try { c = JSON.parse(lstore('sk_pnd') || 'null'); } catch (x) { c = null; }
-    if (c && c.hariIni === ymd(new Date())) { toast('Sedang luring: memakai daftar kartu tersimpan. Hasil pindai dikirim saat sinyal kembali.', 'warn'); PND.online = false; return c; }
-    throw e;
-  }).then(function (d) {
-    if (stale(tok)) return;
+  // Daftar kartu hari ini dari perangkat (bila ada) → halaman tampil seketika, lalu diperbarui diam-diam dari server.
+  let c = null; try { c = JSON.parse(lstore('sk_pnd') || 'null'); } catch (x) { c = null; }
+  const simpanan = c && c.hariIni === ymd(new Date()) && c.murid ? c : null;
+  const mulai = function (d) {
     PND.d = d; PND.map = {}; PND.sudah = d.sudah || {}; PND.recent = PND.recent.filter(function (x) { return x.tgl === d.hariIni; });
     d.murid.forEach(function (m) { PND.map[m.k] = m; });
     pndGambar();
     clearInterval(PND.timer); PND.timer = setInterval(pndKirim, 2500);
     pndKirim();
     if (navigator.wakeLock && navigator.wakeLock.request) navigator.wakeLock.request('screen').then(function (w) { PND.wake = w; }).catch(function () { });
+  };
+  const segar = api('pindai.siap', {}, !!simpanan).then(function (d) {
+    lstore('sk_pnd', JSON.stringify(d));
+    return d;
+  });
+  if (simpanan) {
+    if (stale(tok)) return Promise.resolve();
+    mulai(simpanan);
+    segar.then(function (d) {
+      if (stale(tok) || S.page !== 'pindai' || !PND.d) return;
+      const ubahTampilan = d.libur !== PND.d.libur || d.jamMasuk !== PND.d.jamMasuk;
+      // Tanda yang dicatat di perangkat tetap dipakai; data server melengkapinya.
+      const sudah = Object.assign({}, PND.sudah, d.sudah || {});
+      PND.d = d; PND.map = {}; PND.sudah = sudah; d.sudah = sudah;
+      d.murid.forEach(function (m) { PND.map[m.k] = m; });
+      if (ubahTampilan && PND.mode !== 'kamera') pndGambar(); else pndStat();
+    }).catch(function () { PND.online = false; });
+    return Promise.resolve();
+  }
+  return segar.catch(function (e) {
+    // Sinyal putus: pakai daftar kartu terakhir di perangkat bila masih hari yang sama.
+    if (c && c.hariIni === ymd(new Date())) { toast('Sedang luring: memakai daftar kartu tersimpan. Hasil pindai dikirim saat sinyal kembali.', 'warn'); PND.online = false; return c; }
+    throw e;
+  }).then(function (d) {
+    if (stale(tok)) return;
+    mulai(d);
   });
 };
 function pndGambar() {
