@@ -1053,3 +1053,4 @@ details.rinc:not([open]) > summary { border-bottom: 0; }
 .pna-tbl .input { min-height: 36px; padding: 6px 8px; font-size: 13px; }
 .pna-tbl td { vertical-align: middle; }
 @media (min-width: 768px) { .form-grid.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.bi-person-heart{--bi:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22%23000%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Ccircle%20cx=%229%22%20cy=%227%22%20r=%224%22/%3E%3Cpath%20d=%22M2%2021v-1a6%206%200%200%201%209.5-4.9%22/%3E%3Cpath%20d=%22M17.5%2021s-3.5-2.1-3.5-4.6a1.9%201.9%200%200%201%203.5-1%201.9%201.9%200%200%201%203.5%201c0%202.5-3.5%204.6-3.5%204.6z%22/%3E%3C/svg%3E")}

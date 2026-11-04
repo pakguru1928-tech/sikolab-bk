@@ -9,7 +9,7 @@
    ============================================================ */
 
 // ── Util ──
-const PENGEMBANG = 'Iwa Salji Elbi Satria', PENGEMBANG_SEKOLAH = 'UPT SMPN 3 Batipuh', VERSI_APP = '1.10';
+const PENGEMBANG = 'Iwa Salji Elbi Satria', PENGEMBANG_SEKOLAH = 'UPT SMPN 3 Batipuh', VERSI_APP = '1.11';
 const $ = function (s, r) { return (r || document).querySelector(s); };
 // Pengaman: callback lama yang selesai setelah pengguna pindah halaman tidak boleh memunculkan galat.
 window.addEventListener('unhandledrejection', function (e) { const m = String(e.reason && e.reason.message || ''); if (/of null|of undefined/.test(m)) { e.preventDefault(); if (window.console) console.warn('[diabaikan]', m); } });
@@ -78,7 +78,7 @@ function loadEnd() { S.pending = Math.max(0, S.pending - 1); if (!S.pending) $('
 // Setiap aksi yang mengubah data otomatis mengosongkan cache sehingga tampilan tidak basi.
 const READ_ACTIONS = { 'auth.status': 1, 'boot': 1, 'notif.get': 1, 'dashboard.get': 1, 'dashboard.distribusi': 1, 'laporan.rekap': 1, 'murid.cari': 1, 'absensi.meta': 1, 'absensi.riwayat': 1, 'absensi.roster': 1, 'harian.meta': 1, 'harian.roster': 1, 'harian.rekap': 1, 'pola.list': 1, 'kasus.list': 1, 'kasus.detail': 1, 'bk.daftar': 1, 'layanan.daftar': 1, 'layanan.get': 1, 'pengguna.ringkas': 1, 'monitoring.daftar': 1, 'ortu.siapkan': 1, 'ortu.riwayat': 1, 'riwayat.murid': 1, 'admin.meta': 1, 'admin.pengampuInfo': 1, 'admin.list': 1, 'admin.config.get': 1, 'admin.kasusAktif': 1, 'admin.pemeliharaan': 1, 'admin.log': 1, 'arsip.ringkasan': 1, 'naik.pratinjau': 1, 'program.daftar': 1, 'program.detail': 1, 'instrumen.daftar': 1, 'instrumen.get': 1, 'instrumen.responden': 1, 'instrumen.jawabGet': 1, 'instrumen.hasil': 1, 'instrumen.perMurid': 1, 'instrumen.jawabDetail': 1, 'instrumen.ekspor': 1, 'rekap.tahunan': 1, 'kelas.saya': 1, 'kop.get': 1, 'harian.periode': 1, 'instrumen.profilKelas': 1, 'instrumen.cetakProfil': 1, 'program.kebutuhan': 1, 'program.dokumen': 1 };
 const CACHEABLE = { 'dashboard.get': 1, 'dashboard.distribusi': 1, 'murid.cari': 1, 'absensi.meta': 1, 'harian.meta': 1, 'kasus.list': 1, 'kasus.detail': 1, 'bk.daftar': 1, 'layanan.daftar': 1, 'pengguna.ringkas': 1, 'monitoring.daftar': 1, 'riwayat.murid': 1, 'admin.meta': 1, 'admin.list': 1, 'program.daftar': 1, 'program.detail': 1, 'instrumen.daftar': 1, 'instrumen.hasil': 1, 'instrumen.perMurid': 1, 'rekap.tahunan': 1, 'kelas.saya': 1, 'laporan.rekap': 1, 'harian.rekap': 1, 'absensi.riwayat': 1, 'hadir.daftar': 1, 'temu.daftar': 1, 'ortu.riwayat': 1, 'ortu.siapkan': 1, 'ortu.riwayat': 1, 'layanan.get': 1, 'instrumen.get': 1, 'instrumen.responden': 1, 'instrumen.jawabDetail': 1, 'instrumen.jawabGet': 1, 'kehadiran.get': 1, 'admin.config.get': 1, 'admin.pengampuInfo': 1, 'admin.kasusAktif': 1, 'arsip.ringkasan': 1, 'admin.pemeliharaan': 1, 'temu.daftar': 1, 'naik.pratinjau': 1, 'kop.get': 1, 'harian.periode': 1, 'instrumen.profilKelas': 1, 'program.kebutuhan': 1, 'program.dokumen': 1 };
-['poin.meta', 'poin.daftar', 'poin.murid', 'poin.saya', 'poin.verifikasi', 'poin.rekap', 'hadir.daftar', 'temu.daftar', 'pindai.siap', 'kehadiran.get', 'muat.banyak', 'ortu.suratPratinjau', 'surat.contoh', 'admin.diagSurat', 'kartu.data', 'berkas.ambil', 'laporan.pdf', 'rekap.tahunanPdf'].forEach(function (a) { READ_ACTIONS[a] = 1; });
+['dampingan.daftar', 'dampingan.catatan', 'dampingan.rencana', 'dampingan.laporan', 'guruwali.info', 'absensi.bulan', 'absensi.bulanMeta', 'poin.meta', 'poin.daftar', 'poin.murid', 'poin.saya', 'poin.verifikasi', 'poin.rekap', 'hadir.daftar', 'temu.daftar', 'pindai.siap', 'kehadiran.get', 'muat.banyak', 'ortu.suratPratinjau', 'surat.contoh', 'admin.diagSurat', 'kartu.data', 'berkas.ambil', 'laporan.pdf', 'rekap.tahunanPdf'].forEach(function (a) { READ_ACTIONS[a] = 1; });
 // Cache klien "tampilkan dulu, perbarui kemudian" (stale-while-revalidate):
 //  - Data segar (≤ 2 menit) dipakai langsung.
 //  - Data lebih tua (≤ 30 menit) tetap DITAMPILKAN SEKETIKA, lalu diperbarui diam-diam; bila berubah dan pengguna belum
@@ -91,7 +91,8 @@ const CC_REL = {
   layanan: ['layanan', 'program', 'riwayat', 'kasus', 'dashboard', 'temu'], temu: ['temu', 'riwayat', 'layanan'], ortu: ['ortu', 'riwayat', 'kelas', 'dashboard'], kelas: ['kelas', 'ortu', 'riwayat'],
   program: ['program', 'layanan'], instrumen: ['instrumen', 'riwayat'],
   wali: ['kasus', 'riwayat', 'kelas', 'dashboard', 'monitoring'], notif: ['notif'],
-  poin: ['poin', 'riwayat', 'kelas', 'kasus', 'notif']
+  poin: ['poin', 'riwayat', 'kelas', 'kasus', 'notif'],
+  dampingan: ['dampingan', 'riwayat'], guruwali: ['dampingan', 'admin', 'riwayat', 'murid']
 };
 function ccClear(action) {
   const dom = action ? action.split('.')[0] : '';
@@ -104,7 +105,7 @@ function ccClear(action) {
 }
 // ── Cache klien yang bertahan setelah aplikasi ditutup: halaman yang pernah dibuka tampil seketika saat dibuka lagi. ──
 // Disimpan di perangkat (localStorage bila "Ingat saya", selain itu sessionStorage). Data sangat rahasia tidak disimpan.
-['poin.meta', 'poin.daftar', 'poin.rekap'].forEach(function (a) { CACHEABLE[a] = 1; });
+['poin.meta', 'poin.daftar', 'poin.rekap', 'dampingan.daftar', 'absensi.bulanMeta'].forEach(function (a) { CACHEABLE[a] = 1; });
 const CC_TIDAK_DISIMPAN = { 'poin.daftar': 1, 'kasus.detail': 1, 'layanan.get': 1, 'instrumen.jawabDetail': 1, 'instrumen.jawabGet': 1, 'riwayat.murid': 1, 'instrumen.perMurid': 1, 'ortu.siapkan': 1, 'admin.config.get': 1 };
 const CC_SIMPAN_MAKS = 1800000, CC_UMUR_SIMPAN = 12 * 3600000;
 let CC_TMR = 0;
@@ -1148,12 +1149,12 @@ function canHarian() { return hasAny(['wali_kelas', 'guru_bk', 'waka', 'admin'])
 PAGES.absensi = function (params, tok) {
   const mapelOk = hasAny(['guru_mapel', 'wali_kelas', 'guru_bk', 'waka', 'admin']);
   const harOk = canHarian();
-  let tab = (params.tab === 'harian' || params.tab === 'daftar' || params.tab === 'rekap' || params.tab === 'periode') && harOk ? params.tab : params.tab === 'mapel' ? 'mapel' : (hasRole('guru_mapel') || !harOk ? 'mapel' : 'harian');
+  let tab = (params.tab === 'harian' || params.tab === 'daftar' || params.tab === 'rekap' || params.tab === 'periode') && harOk ? params.tab : (params.tab === 'mapel' || (params.tab === 'rmapel' && mapelOk)) ? params.tab : (hasRole('guru_mapel') || !harOk ? 'mapel' : 'harian');
   if (params.id_kelas && params.id_mapel) tab = 'mapel';
   P.absTab = tab;
   const judul = hasAny(['guru_mapel', 'wali_kelas', 'guru_bk', 'waka']) ? 'Absensi Murid' : 'Rekap Absensi';
   let h = pageHead('Presensi', judul, 'Absensi harian dicatat sekali sehari per kelas oleh wali kelas. Absensi mata pelajaran dicatat guru setiap sesi mengajar.', '');
-  h += '<div class="tabs mb-16" id="abs-tabs">' + (mapelOk ? '<button class="tab ' + (tab === 'mapel' ? 'active' : '') + '" data-act="abs-tab" data-t="mapel"><i class="bi bi-journal-text"></i> Per mata pelajaran</button>' : '') + (harOk ? '<button class="tab ' + (tab === 'harian' ? 'active' : '') + '" data-act="abs-tab" data-t="harian"><i class="bi bi-calendar-check"></i> Harian</button><button class="tab ' + (tab === 'rekap' ? 'active' : '') + '" data-act="abs-tab" data-t="rekap"><i class="bi bi-table"></i> Rekap bulanan</button><button class="tab ' + (tab === 'periode' ? 'active' : '') + '" data-act="abs-tab" data-t="periode"><i class="bi bi-calendar-range"></i> Rekap periode</button><button class="tab ' + (tab === 'daftar' ? 'active' : '') + '" data-act="abs-tab" data-t="daftar"><i class="bi bi-printer"></i> Daftar hadir</button>' : '') + '</div><div id="abs-body"></div>';
+  h += '<div class="tabs mb-16" id="abs-tabs">' + (mapelOk ? '<button class="tab ' + (tab === 'mapel' ? 'active' : '') + '" data-act="abs-tab" data-t="mapel"><i class="bi bi-journal-text"></i> Per mata pelajaran</button>' : '') + (harOk ? '<button class="tab ' + (tab === 'harian' ? 'active' : '') + '" data-act="abs-tab" data-t="harian"><i class="bi bi-calendar-check"></i> Harian</button><button class="tab ' + (tab === 'rekap' ? 'active' : '') + '" data-act="abs-tab" data-t="rekap"><i class="bi bi-table"></i> Rekap bulanan</button><button class="tab ' + (tab === 'periode' ? 'active' : '') + '" data-act="abs-tab" data-t="periode"><i class="bi bi-calendar-range"></i> Rekap periode</button><button class="tab ' + (tab === 'daftar' ? 'active' : '') + '" data-act="abs-tab" data-t="daftar"><i class="bi bi-printer"></i> Daftar hadir</button>' : '') + (mapelOk ? '<button class="tab ' + (tab === 'rmapel' ? 'active' : '') + '" data-act="abs-tab" data-t="rmapel"><i class="bi bi-printer"></i> Rekap mapel bulanan</button>' : '') + '</div><div id="abs-body"></div>';
   $('#app-container').innerHTML = h;
   const akt = $('#abs-tabs .tab.active'); if (akt && akt.scrollIntoView) { try { akt.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) { /* abaikan */ } }
   return absTabLoad(tab, params, tok);
@@ -1169,6 +1170,7 @@ function absTabLoad(tab, params, tok) {
   if (tab === 'rekap') return rkPage(params, tok);
   if (tab === 'daftar') return dhPage(params, tok);
   if (tab === 'periode') return rpPage(params, tok);
+  if (tab === 'rmapel') return rmPage(params, tok);
   return mapelPage(params, tok);
 }
 
@@ -2279,7 +2281,7 @@ PAGES.riwayat = function (params, tok) {
 };
 function chipStatusT(cls, text) { return '<span class="chip st-' + esc(slug(cls)) + '">' + esc(text) + '</span>'; }
 const TIPE_LABEL = { permintaan: 'Permintaan murid', semua: 'Semua', harian: 'Absensi harian', absensi: 'Absensi mapel', kejadian: 'Kejadian', bimbingan: 'Pembinaan guru', rujukan: 'Rujukan', tinjau: 'Tinjauan BK', monitoring: 'Tindak lanjut', layanan: 'Layanan BK', layanan_privasi: 'Layanan BK', ortu: 'Orang tua', instrumen: 'Instrumen' };
-const TIPE_IKON = { permintaan: 'bi-person-raised-hand', harian: 'bi-calendar-check', absensi: 'bi-person-check', kejadian: 'bi-exclamation-triangle', bimbingan: 'bi-people', rujukan: 'bi-send', tinjau: 'bi-eye', monitoring: 'bi-list-check', layanan: 'bi-heart-pulse', layanan_privasi: 'bi-lock-fill', ortu: 'bi-chat-dots', instrumen: 'bi-clipboard-data', poin: 'bi-award' };
+const TIPE_IKON = { permintaan: 'bi-person-raised-hand', harian: 'bi-calendar-check', absensi: 'bi-person-check', kejadian: 'bi-exclamation-triangle', bimbingan: 'bi-people', rujukan: 'bi-send', tinjau: 'bi-eye', monitoring: 'bi-list-check', layanan: 'bi-heart-pulse', layanan_privasi: 'bi-lock-fill', ortu: 'bi-chat-dots', instrumen: 'bi-clipboard-data', poin: 'bi-award', pendampingan: 'bi-person-heart' };
 function rwLoad(id, tok) {
   return apiC('riwayat.murid', { id_murid: id }).then(function (d) {
     if (stale(tok)) return;
@@ -2287,12 +2289,13 @@ function rwLoad(id, tok) {
     const m = d.murid, r = d.ringkas;
     const act = [];
     if (d.bolehLayanan) act.push('<button class="btn primary" data-act="rw-layanan"><i class="bi bi-heart-pulse"></i> Catat layanan BK</button>');
+    if (d.bolehDampingan) act.push('<button class="btn primary" data-act="gw-catat" data-id="' + esc(m.id) + '"><i class="bi bi-journal-plus"></i> Catat pendampingan</button>');
     if (d.bolehLapor) act.push('<button class="btn" data-act="lap-murid" data-id="' + esc(m.id) + '" data-n="' + esc(m.nama) + '"><i class="bi bi-plus-circle"></i> Lapor kejadian</button>');
     if (d.bolehOrtu) act.push('<button class="btn blue" data-act="wa-murid" data-id="' + esc(m.id) + '"><i class="bi bi-whatsapp"></i> Hubungi orang tua</button>');
     act.push('<button class="btn ghost" data-act="rw-cetak" title="Cetak ringkasan"><i class="bi bi-printer"></i></button>');
     const ab = r.absenHarian || {};
     let h = '<button class="btn sm ghost mb-8 no-print" data-act="nav" data-page="riwayat"><i class="bi bi-arrow-left"></i> Daftar murid</button>' +
-      '<div class="card pad rw-head"><div class="row between wrap" style="gap:16px"><div class="profile-head"><div class="big-av">' + esc(initials(m.nama)) + '</div><div><h2>' + esc(m.nama) + '</h2><div class="xs muted">NIS ' + esc(m.nis) + ' · ' + esc(m.kelas) + ' · Wali kelas: ' + esc(m.wali || '-') + (d.kolaborasi.guruBk ? ' · Guru BK: ' + esc(d.kolaborasi.guruBk) : '') + (m.status !== 'Aktif' ? ' · <b>' + esc(m.status) + '</b>' : '') + '</div>' +
+      '<div class="card pad rw-head"><div class="row between wrap" style="gap:16px"><div class="profile-head"><div class="big-av">' + esc(initials(m.nama)) + '</div><div><h2>' + esc(m.nama) + '</h2><div class="xs muted">NIS ' + esc(m.nis) + ' · ' + esc(m.kelas) + ' · Wali kelas: ' + esc(m.wali || '-') + (m.guruWali ? ' · Guru wali: ' + esc(m.guruWali) : '') + (d.kolaborasi.guruBk ? ' · Guru BK: ' + esc(d.kolaborasi.guruBk) : '') + (m.status !== 'Aktif' ? ' · <b>' + esc(m.status) + '</b>' : '') + '</div>' +
       '<div class="row wrap mt-8">' + chipStatusT(r.progres === 'Belum ada kasus' ? 'Selesai' : r.progres, r.progres === 'Belum ada kasus' ? 'Tidak ada kasus' : 'Kasus terakhir: ' + r.progres) + (r.pola ? '<span class="chip lv-perhatian"><i class="bi bi-exclamation-triangle"></i> ' + esc(r.pola) + '</span>' : '') + '</div></div></div>' +
       '<div class="row wrap no-print">' + act.join('') + '</div></div></div>' +
       '<div class="stat-row s6 mt-16">' +
@@ -2366,7 +2369,7 @@ PAGES.ortu = function (params, tok) {
   $('#app-container').innerHTML = pageHead('Kemitraan orang tua', 'Hubungi Orang Tua', 'Siapkan pesan WhatsApp dari templat, buat surat panggilan resmi, dan catat setiap komunikasi.', '') +
     '<div class="card pad"><div class="search" style="max-width:none"><i class="bi bi-search"></i><input id="or-q" class="input" style="padding-left:36px" type="search" placeholder="Cari murid (nama atau NIS)…" autocomplete="off"></div></div><div id="or-list" class="card mt-16"></div>';
   const go = function () {
-    apiC('murid.cari', { q: $('#or-q').value.trim() }).then(function (rows) {
+    apiC('murid.cari', hasAny(['wali_kelas', 'guru_bk']) ? { q: $('#or-q').value.trim() } : { q: $('#or-q').value.trim(), ortu: 1 }).then(function (rows) {
       if (!$('#or-list')) return;
       $('#or-list').innerHTML = rows.length ? '<div class="cases">' + rows.map(function (m) {
         return '<button class="case" data-act="ortu-murid" data-id="' + esc(m.id) + '" style="flex-direction:row;align-items:center"><div class="avatar">' + esc(initials(m.nama)) + '</div><div class="grow"><div class="c-name">' + esc(m.nama) + '</div><div class="xs muted">' + esc(m.kelas) + ' · NIS ' + esc(m.nis) + '</div></div><i class="bi bi-chevron-right muted"></i></button>';
@@ -3837,7 +3840,7 @@ ACT['in-csv'] = function () {
 // ════════════════════════════════════════════════════════════
 // Administrasi (F12): data master CRUD, impor, pengaturan, log
 // ════════════════════════════════════════════════════════════
-const ADM_TABS = [['users', 'Pengguna', 'bi-people'], ['murid', 'Murid', 'bi-mortarboard'], ['kelas', 'Kelas', 'bi-grid-3x3-gap'], ['mapel', 'Mata Pelajaran', 'bi-journal-bookmark'], ['pengampu', 'Pengampu', 'bi-diagram-3'], ['kategori', 'Kategori', 'bi-tags'], ['penugasan', 'Penugasan BK', 'bi-person-gear'], ['tahun', 'Tahun Ajaran', 'bi-calendar-event'], ['kehadiran', 'Kehadiran & Libur', 'bi-qr-code-scan'], ['surat', 'Surat & Cetak', 'bi-file-earmark-text'], ['poin', 'Sistem Poin', 'bi-award'], ['config', 'Pengaturan', 'bi-sliders'], ['log', 'Log akses', 'bi-clock-history']];
+const ADM_TABS = [['users', 'Pengguna', 'bi-people'], ['murid', 'Murid', 'bi-mortarboard'], ['kelas', 'Kelas', 'bi-grid-3x3-gap'], ['mapel', 'Mata Pelajaran', 'bi-journal-bookmark'], ['pengampu', 'Pengampu', 'bi-diagram-3'], ['kategori', 'Kategori', 'bi-tags'], ['penugasan', 'Penugasan BK', 'bi-person-gear'], ['guruwali', 'Guru Wali', 'bi-person-heart'], ['tahun', 'Tahun Ajaran', 'bi-calendar-event'], ['kehadiran', 'Kehadiran & Libur', 'bi-qr-code-scan'], ['surat', 'Surat & Cetak', 'bi-file-earmark-text'], ['poin', 'Sistem Poin', 'bi-award'], ['config', 'Pengaturan', 'bi-sliders'], ['log', 'Log akses', 'bi-clock-history']];
 
 PAGES.admin = function (params, tok) {
   return apiC('admin.meta').then(function (meta) {
@@ -3861,6 +3864,7 @@ function adDraw() {
   if (t === 'kehadiran') return adKehadiran();
   if (t === 'surat') return adSurat();
   if (t === 'poin') return adPoin();
+  if (t === 'guruwali') return adGuruWali();
   if (t === 'log') return adLog();
   const e = P.ad.meta.entities[t];
   const statusF = (t === 'users' || t === 'murid');
@@ -5743,3 +5747,265 @@ ACT['pna-aktif'] = function (el) {
 };
 function pnaSesudah(meta) { ccClear('poin.atur'); if (P.pn) P.pn.meta = meta; const box = (S.page === 'admin' ? $('#ad-body') : $('#pn-body')) || P.pnA.box; pnAturan(box, meta); }
 function adPoin() { $('#ad-body').innerHTML = skeleton(2); api('poin.meta', {}).then(function (meta) { pnAturan($('#ad-body'), meta); }).catch(function (e) { isiHtml('#ad-body', errBox(e)); }); }
+
+// ════════════════════════════════════════════════════════════
+// v1.11 — Guru wali: Murid Dampingan (pendampingan murid sampai lulus)
+// ════════════════════════════════════════════════════════════
+const GW_TABS = [['murid', 'Murid dampingan', 'bi-people'], ['catatan', 'Catatan pendampingan', 'bi-journal-text'], ['rencana', 'Rencana & laporan', 'bi-file-earmark-text']];
+PAGES.dampingan = function (params, tok) {
+  return apiC('dampingan.daftar', {}).then(function (d) {
+    if (stale(tok)) return;
+    P.gw = { d: d, tab: params.tab || P.gwTab || 'murid' };
+    $('#app-container').innerHTML = pageHead('Guru wali', 'Murid Dampingan', 'Pendampingan akademik, bakat dan minat, sosial-psikologis, dan karakter murid sejak terdaftar sampai lulus. Kebutuhan konseling dirujuk ke Guru BK.', '<button class="btn primary" data-act="gw-catat"><i class="bi bi-journal-plus"></i> Catat pendampingan</button>') +
+      '<div class="tabs mb-16" id="gw-tabs">' + GW_TABS.map(function (t) { return '<button class="tab ' + (t[0] === P.gw.tab ? 'active' : '') + '" data-act="gw-tab" data-t="' + t[0] + '"><i class="bi ' + t[2] + '"></i> ' + t[1] + '</button>'; }).join('') + '</div><div id="gw-body"></div>';
+    gwDraw();
+  });
+};
+ACT['gw-tab'] = function (el) { P.gw.tab = P.gwTab = el.dataset.t; $$('#gw-tabs .tab').forEach(function (b) { b.classList.toggle('active', b === el); }); gwDraw(); };
+function gwDraw() {
+  const t = P.gw.tab;
+  if (t === 'catatan') return gwCatatan();
+  if (t === 'rencana') return gwRencana();
+  const d = P.gw.d, r = d.ringkas;
+  if (!d.murid.length) { $('#gw-body').innerHTML = '<div class="card pad">' + empty('bi-people', 'Belum ada murid dampingan', 'Admin menetapkan murid dampingan di Administrasi → Guru Wali.') + '</div>'; return; }
+  let h = '<div class="grid g-kpi k4">' + [['teal', 'bi-people', 'Murid dampingan', r.murid, 'lintas kelas'], ['rose', 'bi-exclamation-triangle', 'Perlu perhatian', r.perhatian, 'pola, kasus, alpa ≥ 3' + (d.poinAktif ? ', tahap poin' : '')], ['amber', 'bi-hourglass-split', 'Belum didampingi', r.belumDidampingi, 'tahun ajaran ' + d.tahunAjaran], ['indigo', 'bi-journal-text', 'Catatan saya', r.catatan, 'tahun ajaran ' + d.tahunAjaran]].map(function (x) {
+    return '<div class="kpi ' + x[0] + '" style="cursor:default"><span class="k-ic"><i class="bi ' + x[1] + '"></i></span><div class="k-lb">' + x[2] + '</div><div><div class="k-v">' + x[3] + '</div><div class="k-s">' + esc(x[4]) + '</div></div></div>';
+  }).join('') + '</div>';
+  h += '<div class="card mt-16"><div class="card-head" style="flex-wrap:wrap"><div class="fchips" id="gw-f"><button class="fchip active" data-act="gw-f" data-f="">Semua</button><button class="fchip" data-act="gw-f" data-f="p">Perlu perhatian</button><button class="fchip" data-act="gw-f" data-f="b">Belum didampingi</button></div><div class="search" style="max-width:220px"><i class="bi bi-search"></i><input id="gw-q" type="search" placeholder="Cari murid…"></div></div>' +
+    '<div class="tbl-wrap mt-12"><table class="tbl" id="gw-tbl" style="min-width:' + (d.poinAktif ? 900 : 820) + 'px"><thead><tr><th>Murid</th><th>Kelas</th><th>Kehadiran 30 hr</th><th>Alpa</th><th>Kasus aktif</th>' + (d.poinAktif ? '<th>Poin</th>' : '') + '<th>Pendampingan</th><th style="text-align:right">Aksi</th></tr></thead><tbody>' +
+    d.murid.map(function (m, i) {
+      const p = m.pola || m.kasus || m.A >= 3 || m.poinTahap;
+      return '<tr data-q="' + esc((m.nama + ' ' + m.nis).toLowerCase()) + '" data-p="' + (p ? 1 : 0) + '" data-b="' + (m.catatan ? 0 : 1) + '"><td class="click" data-act="open-murid" data-id="' + esc(m.id) + '" style="cursor:pointer"><div class="fw6">' + esc(m.nama) + '</div><div class="xs muted">NIS ' + esc(m.nis) + '</div>' + (m.pola ? '<div class="mt-8">' + chipLevel(m.pola) + '</div>' : '') + '</td><td>' + esc(m.kelas) + '</td>' +
+        '<td>' + (m.hadir === null ? '<span class="muted">—</span>' : '<div class="row"><div class="bar" style="width:60px"><i style="width:' + m.hadir + '%"></i></div><b class="xs">' + m.hadir + '%</b></div>') + '</td><td' + (m.A ? ' style="color:var(--rose);font-weight:700"' : '') + '>' + m.A + '</td>' +
+        '<td>' + (m.kasus ? '<span class="chip st-Diproses">' + m.kasus + ' aktif</span>' : '<span class="muted">—</span>') + '</td>' + (d.poinAktif ? '<td>' + (m.poin ? '<b>' + m.poin + '</b>' + (m.poinTahap ? '<div class="xs" style="color:var(--rose)">' + esc(m.poinTahap) + '</div>' : '') : '<span class="muted">0</span>') + '</td>' : '') +
+        '<td class="xs">' + (m.catatan ? m.catatan + ' catatan<div class="muted">terakhir ' + esc(fTgl(m.terakhir)) + '</div>' : '<span class="chip st-Baru">Belum</span>') + '</td>' +
+        '<td style="text-align:right;white-space:nowrap"><button class="btn sm" data-act="gw-catat" data-id="' + esc(m.id) + '" title="Catat pendampingan"><i class="bi bi-journal-plus"></i></button> <button class="btn sm blue" data-act="wa-murid" data-id="' + esc(m.id) + '" title="WhatsApp orang tua"><i class="bi bi-whatsapp"></i></button> <button class="btn sm" data-act="lap-murid" data-id="' + esc(m.id) + '" data-n="' + esc(m.nama) + '" title="Lapor / rujuk ke Guru BK"><i class="bi bi-send"></i></button></td></tr>';
+    }).join('') + '</tbody></table></div></div><p class="xs muted mt-12">Ketuk nama untuk membuka garis waktu murid. Kebutuhan konseling: gunakan tombol <i class="bi bi-send"></i> (Lapor kejadian → "Mohon ditangani Guru BK"). Isi konseling tetap rahasia di Guru BK.</p>';
+  $('#gw-body').innerHTML = h;
+  $('#gw-q').addEventListener('input', gwFilter);
+}
+function gwFilter() {
+  const q = ($('#gw-q').value || '').trim().toLowerCase(), f = P.gwF || '';
+  $$('#gw-tbl tbody tr').forEach(function (tr) { let ok = !q || tr.dataset.q.indexOf(q) >= 0; if (f === 'p') ok = ok && tr.dataset.p === '1'; if (f === 'b') ok = ok && tr.dataset.b === '1'; tr.classList.toggle('hide', !ok); });
+}
+ACT['gw-f'] = function (el) { P.gwF = el.dataset.f; $$('#gw-f .fchip').forEach(function (b) { b.classList.toggle('active', b === el); }); gwFilter(); };
+// ── Catat / ubah pendampingan ──
+ACT['gw-catat'] = function (el) { gwModal(null, el && el.dataset.id ? [el.dataset.id] : []); };
+function gwModal(rec, pilih) {
+  const muat = P.gw && P.gw.d ? Promise.resolve(P.gw.d) : apiC('dampingan.daftar', {});
+  muat.then(function (d) {
+    if (!d.murid.length) { toast('Anda belum memiliki murid dampingan.', 'warn'); return; }
+    const sel = {}; (rec ? rec.ids : pilih || []).forEach(function (id) { sel[id] = 1; });
+    const m = openModal({
+      title: rec ? 'Ubah catatan pendampingan' : 'Catat pendampingan', size: 'lg',
+      body: '<form id="f-gw" class="form-grid" novalidate><div class="field" data-f="murid"><span class="flabel">Murid <span class="req">*</span> <span class="xs muted">— pilih lebih dari satu untuk pertemuan kelompok</span></span><div class="pk-daftar">' + d.murid.map(function (x) { return '<label class="pk-m' + (sel[x.id] ? ' on' : '') + '" style="cursor:pointer"><input type="checkbox" class="sr" value="' + esc(x.id) + '"' + (sel[x.id] ? ' checked' : '') + '><i class="bi ' + (sel[x.id] ? 'bi-check-circle' : 'bi-circle') + '"></i><span><b>' + esc(x.nama) + '</b><small>' + esc(x.kelas) + '</small></span></label>'; }).join('') + '</div><div class="err" role="alert"></div></div>' +
+        '<div class="form-grid c3">' + fld({ name: 'tanggal', label: 'Tanggal', type: 'date', req: true, value: rec ? rec.tanggal : S.today, maxv: S.today }) + fld({ name: 'aspek', label: 'Aspek', type: 'select', req: true, value: rec ? rec.aspek : d.aspek[0], opts: d.aspek }) + fld({ name: 'bentuk', label: 'Bentuk', type: 'select', req: true, value: rec ? rec.bentuk : d.bentuk[0], opts: d.bentuk }) + '</div>' +
+        fld({ name: 'uraian', label: 'Uraian kegiatan', type: 'textarea', req: true, rows: 3, max: 2000, value: rec ? rec.uraian : '', ph: 'Apa yang dibahas atau diamati, secara faktual.' }) +
+        '<div class="form-grid c2">' + fld({ name: 'hasil', label: 'Hasil (opsional)', type: 'textarea', rows: 2, max: 1500, value: rec ? rec.hasil : '' }) + fld({ name: 'tindak_lanjut', label: 'Tindak lanjut (opsional)', type: 'textarea', rows: 2, max: 1000, value: rec ? rec.tindak_lanjut : '', ph: 'mis. Konsultasi dengan Guru BK, hubungi orang tua' }) + '</div>' +
+        '<div class="note info"><i class="bi bi-shield-lock"></i><div>Catatan dibaca Anda, Guru BK, Waka, admin, dan wali kelas murid. Hal yang bersifat konseling/rahasia sebaiknya dirujuk ke Guru BK, bukan ditulis rinci di sini.</div></div></form>',
+      foot: '<button class="btn" data-close>Batal</button><button class="btn primary" id="gw-ok"><i class="bi bi-check-lg"></i> Simpan</button>'
+    });
+    $$('.pk-m input', m.el).forEach(function (c) { c.addEventListener('change', function () { c.parentNode.classList.toggle('on', c.checked); c.nextSibling.className = 'bi ' + (c.checked ? 'bi-check-circle' : 'bi-circle'); }); });
+    $('#gw-ok', m.el).addEventListener('click', function (e) {
+      const f = $('#f-gw', m.el), v = formData(f);
+      const ids = $$('.pk-m input:checked', m.el).map(function (c) { return c.value; });
+      let ok = validate(f, v, { tanggal: { label: 'Tanggal', req: true }, uraian: { label: 'Uraian', req: true, min: 10 } });
+      if (!ids.length) { setErr(f, 'murid', 'Pilih minimal satu murid.'); ok = false; }
+      if (!ok) return;
+      v.id_murid_list = ids; if (rec) v.id = rec.id;
+      run(e.currentTarget, api('dampingan.catat', v)).then(function () { m.close(); toast('Catatan pendampingan tersimpan.'); ccClear('dampingan.catat'); if (S.page === 'dampingan') navigateTo('dampingan', { tab: P.gw.tab }, true, true); else if (S.page === 'riwayat') navigateTo('riwayat', S.params, true, true); }).catch(fail);
+    });
+  }).catch(fail);
+}
+function gwCatatan() {
+  $('#gw-body').innerHTML = skeleton(2);
+  return api('dampingan.catatan', {}).then(function (r) {
+    P.gw.cat = r.rows;
+    $('#gw-body').innerHTML = '<div class="card"><div class="card-head"><h3>Catatan tahun ajaran ' + esc(P.gw.d.tahunAjaran) + '</h3><span class="xs muted">' + r.rows.length + ' catatan</span></div><div class="card-body">' + (r.rows.length ? r.rows.map(function (x, i) {
+      return '<div class="sec mt-8"><div class="row between wrap" style="gap:6px"><div class="row wrap" style="gap:6px"><span class="chip kc-teal">' + esc(x.aspek) + '</span><span class="chip neutral">' + esc(x.bentuk) + '</span></div><span class="xs muted">' + esc(fTgl(x.tanggal)) + ' · ' + esc(x.semester) + '</span></div><div class="fw6 mt-8">' + esc(x.murid.join(', ')) + '</div><div class="body" style="line-height:20px">' + esc(x.uraian) + '</div>' +
+        (x.hasil ? '<div class="xs mt-8"><b>Hasil:</b> ' + esc(x.hasil) + '</div>' : '') + (x.tindak_lanjut ? '<div class="xs mt-8"><b>Tindak lanjut:</b> ' + esc(x.tindak_lanjut) + '</div>' : '') +
+        '<div class="row mt-8" style="gap:6px"><button class="btn sm" data-act="gw-ubah" data-i="' + i + '"><i class="bi bi-pencil"></i> Ubah</button><button class="btn sm ghost" data-act="gw-hapus" data-id="' + esc(x.id) + '"><i class="bi bi-trash3"></i> Hapus</button></div></div>';
+    }).join('') : empty('bi-journal-text', 'Belum ada catatan pendampingan', 'Tekan "Catat pendampingan" di atas.')) + '</div></div>';
+  }).catch(function (e) { isiHtml('#gw-body', errBox(e)); });
+}
+ACT['gw-ubah'] = function (el) { gwModal(P.gw.cat[+el.dataset.i]); };
+ACT['gw-hapus'] = function (el) {
+  confirmDlg('Hapus catatan pendampingan ini?', 'Hapus', true).then(function (y) { if (!y) return; api('dampingan.hapus', { id: el.dataset.id }).then(function () { toast('Catatan dihapus.'); ccClear('dampingan.catat'); gwCatatan(); }).catch(fail); });
+};
+// ── Rencana pendampingan & laporan tahunan ──
+function gwRencana() {
+  $('#gw-body').innerHTML = skeleton(2);
+  return api('dampingan.rencana', {}).then(function (r) {
+    const q = r.isi || {}, keg = (q.kegiatan && q.kegiatan.length ? q.kegiatan : [{ w: '', a: 'Akademik', k: '' }]);
+    P.gw.ren = { keg: keg };
+    $('#gw-body').innerHTML = '<div class="card pad"><div class="row between wrap" style="gap:8px"><div><h3>Rencana pendampingan · TA ' + esc(r.tahun_ajaran) + '</h3><div class="xs muted mt-8">Bukti dukung guru wali: rencana pendampingan dan laporan tahunan. Isi sesuai kebutuhan murid dampingan Anda.</div></div><div class="row wrap" style="gap:6px"><button class="btn" data-act="gw-cetak-ren"><i class="bi bi-printer"></i> Cetak rencana</button><button class="btn" data-act="gw-cetak-lap"><i class="bi bi-printer"></i> Cetak laporan tahunan</button></div></div>' +
+      '<form id="f-ren" class="form-grid mt-16" novalidate>' + fld({ name: 'tujuan', label: 'Tujuan pendampingan', type: 'textarea', rows: 3, max: 1500, value: q.tujuan || '', ph: 'mis. Murid dampingan mencapai ketuntasan belajar, mengenali minat dan bakatnya, serta memiliki relasi sosial yang sehat.' }) +
+      fld({ name: 'jadwal', label: 'Jadwal pertemuan rutin', max: 500, value: q.jadwal || '', ph: 'mis. Pertemuan kelompok setiap Jumat minggu kedua, jam istirahat' }) +
+      '<div class="field"><span class="flabel">Rencana kegiatan</span><div id="ren-keg"></div><button type="button" class="btn sm mt-8" data-act="ren-tambah"><i class="bi bi-plus-lg"></i> Tambah kegiatan</button></div>' +
+      '<h3 class="mt-16">Bahan laporan tahunan</h3>' + fld({ name: 'refleksi', label: 'Refleksi / capaian pendampingan', type: 'textarea', rows: 3, max: 2000, value: q.refleksi || '' }) +
+      '<div class="form-grid c2">' + fld({ name: 'kendala', label: 'Kendala', type: 'textarea', rows: 2, max: 1500, value: q.kendala || '' }) + fld({ name: 'rekomendasi', label: 'Rekomendasi tahun berikutnya', type: 'textarea', rows: 2, max: 1500, value: q.rekomendasi || '' }) + '</div></form>' +
+      '<div class="row mt-16" style="justify-content:flex-end"><button class="btn primary" data-act="ren-simpan"><i class="bi bi-check-lg"></i> Simpan</button></div></div>';
+    renKeg();
+  }).catch(function (e) { isiHtml('#gw-body', errBox(e)); });
+}
+function renBaca() { P.gw.ren.keg = $$('#ren-keg [data-ki]').map(function (row) { return { w: $('[data-k=w]', row).value, a: $('[data-k=a]', row).value, k: $('[data-k=k]', row).value }; }); }
+function renKeg() {
+  const asp = P.gw.d.aspek;
+  $('#ren-keg').innerHTML = P.gw.ren.keg.map(function (k, i) { return '<div class="row wrap mt-8" data-ki="' + i + '" style="gap:6px;align-items:flex-start"><input class="input" data-k="w" maxlength="60" placeholder="Waktu (mis. Juli–Agustus)" value="' + esc(k.w || '') + '" style="flex:0 1 180px"><select class="select" data-k="a" style="flex:0 1 200px">' + asp.map(function (a) { return '<option' + (a === k.a ? ' selected' : '') + '>' + esc(a) + '</option>'; }).join('') + '</select><input class="input" data-k="k" maxlength="300" placeholder="Kegiatan" value="' + esc(k.k || '') + '" style="flex:1 1 260px"><button type="button" class="icon-btn" data-act="ren-hapus" data-i="' + i + '" title="Hapus"><i class="bi bi-trash3"></i></button></div>'; }).join('');
+}
+ACT['ren-tambah'] = function () { renBaca(); P.gw.ren.keg.push({ w: '', a: 'Akademik', k: '' }); renKeg(); };
+ACT['ren-hapus'] = function (el) { renBaca(); P.gw.ren.keg.splice(+el.dataset.i, 1); if (!P.gw.ren.keg.length) P.gw.ren.keg.push({ w: '', a: 'Akademik', k: '' }); renKeg(); };
+function renData() { renBaca(); const v = formData($('#f-ren')); v.kegiatan = P.gw.ren.keg; return v; }
+ACT['ren-simpan'] = function (el) { run(el, api('dampingan.rencanaSimpan', { isi: renData() })).then(function () { toast('Rencana pendampingan tersimpan.'); }).catch(fail); };
+ACT['gw-cetak-ren'] = function (el) {
+  run(el, api('dampingan.rencanaSimpan', { isi: renData() }).then(function (r) { return siapKop().then(function () { return r; }); })).then(function (r) {
+    const q = r.isi, d = P.gw.d;
+    const h = '<div class="pr-doc">' + kopCetak({}) + '<h2 class="pr-title">RENCANA PENDAMPINGAN GURU WALI</h2><div class="pr-sub">Tahun Ajaran ' + esc(r.tahun_ajaran) + '</div>' +
+      '<table class="pr-tbl"><tbody><tr><td style="width:28%">Nama guru wali</td><td>' + esc(S.user.nama) + (S.user.nip ? ' · NIP ' + esc(S.user.nip) : '') + '</td></tr><tr><td>Jumlah murid dampingan</td><td>' + d.murid.length + ' murid</td></tr><tr><td>Tujuan pendampingan</td><td style="white-space:pre-wrap">' + esc(q.tujuan || '-') + '</td></tr><tr><td>Jadwal pertemuan rutin</td><td>' + esc(q.jadwal || '-') + '</td></tr></tbody></table>' +
+      '<h3 style="font-size:11pt;margin:10px 0 4px">A. Rencana kegiatan</h3><table class="pr-tbl"><thead><tr><th style="width:5%">No</th><th style="width:20%">Waktu</th><th style="width:22%">Aspek</th><th>Kegiatan</th></tr></thead><tbody>' + (q.kegiatan.length ? q.kegiatan.map(function (k, i) { return '<tr><td style="text-align:center">' + (i + 1) + '</td><td>' + esc(k.w || '-') + '</td><td>' + esc(k.a) + '</td><td>' + esc(k.k) + '</td></tr>'; }).join('') : '<tr><td colspan="4">-</td></tr>') + '</tbody></table>' +
+      '<h3 style="font-size:11pt;margin:10px 0 4px">B. Daftar murid dampingan</h3><table class="pr-tbl"><thead><tr><th style="width:5%">No</th><th style="width:16%">NIS</th><th>Nama murid</th><th style="width:8%">L/P</th><th style="width:16%">Kelas</th></tr></thead><tbody>' + d.murid.map(function (m, i) { return '<tr><td style="text-align:center">' + (i + 1) + '</td><td>' + esc(m.nis) + '</td><td>' + esc(m.nama) + '</td><td style="text-align:center">' + esc(m.jk || '') + '</td><td>' + esc(m.kelas) + '</td></tr>'; }).join('') + '</tbody></table>' +
+      ttdCetak(ttdKepsek(), ttdOrang('Guru Wali,', S.user.nama, S.user.nip), '') + '</div>';
+    cetakHtml(h, { judul: 'Rencana pendampingan guru wali', ket: 'A4 tegak' });
+  }).catch(fail);
+};
+ACT['gw-cetak-lap'] = function (el) {
+  run(el, api('dampingan.rencanaSimpan', { isi: renData() }).then(function () { return Promise.all([api('dampingan.laporan', {}), api('dampingan.catatan', {}), siapKop()]); })).then(function (res) {
+    const d = res[0], cat = res[1].rows, q = d.rencana || {};
+    const h = '<div class="pr-doc">' + kopCetak({}) + '<h2 class="pr-title">LAPORAN TAHUNAN PENDAMPINGAN GURU WALI</h2><div class="pr-sub">Tahun Ajaran ' + esc(d.tahun_ajaran) + '</div>' +
+      '<table class="pr-tbl"><tbody><tr><td style="width:28%">Nama guru wali</td><td>' + esc(d.guru.nama) + (d.guru.nip ? ' · NIP ' + esc(d.guru.nip) : '') + '</td></tr><tr><td>Jumlah murid dampingan</td><td>' + d.murid.length + ' murid</td></tr><tr><td>Jumlah kegiatan pendampingan</td><td>' + d.totalKegiatan + ' kegiatan (' + Object.keys(d.perSemester).map(function (k) { return 'Semester ' + esc(k) + ': ' + d.perSemester[k]; }).join(', ') + ')</td></tr>' +
+      '<tr><td>Kegiatan per aspek</td><td>' + Object.keys(d.perAspek).filter(function (k) { return d.perAspek[k]; }).map(function (k) { return esc(k) + ' ' + d.perAspek[k]; }).join(' · ') + '</td></tr></tbody></table>' +
+      '<h3 style="font-size:11pt;margin:10px 0 4px">A. Perkembangan murid dampingan</h3><table class="pr-tbl pr-mini" style="font-size:8.5pt"><thead><tr><th>No</th><th style="text-align:left">Nama murid</th><th>Kelas</th><th>Kehadiran</th><th>S</th><th>I</th><th>A</th><th>Kasus (selesai)</th>' + (d.poinAktif ? '<th>Poin</th>' : '') + '<th>Pendampingan</th><th style="text-align:left">Aspek</th></tr></thead><tbody>' +
+      d.murid.map(function (m, i) { return '<tr><td>' + (i + 1) + '</td><td style="text-align:left">' + esc(m.nama) + '</td><td>' + esc(m.kelas) + '</td><td>' + (m.hadir === null ? '-' : m.hadir + '%') + '</td><td>' + m.S + '</td><td>' + m.I + '</td><td>' + m.A + '</td><td>' + m.kasus + ' (' + m.selesai + ')</td>' + (d.poinAktif ? '<td>' + m.poin + '</td>' : '') + '<td>' + m.catatan + '</td><td style="text-align:left">' + esc(m.aspek || '-') + '</td></tr>'; }).join('') + '</tbody></table>' +
+      '<div style="font-size:8.5pt">Kehadiran dihitung dari absensi harian yang tersedia' + (d.dariAbsensi ? ' sejak ' + esc(fTgl(d.dariAbsensi)) : '') + ' (data semester yang sudah diarsipkan tidak ikut).</div>' +
+      '<h3 style="font-size:11pt;margin:10px 0 4px">B. Ringkasan kegiatan pendampingan</h3><table class="pr-tbl" style="font-size:9pt"><thead><tr><th style="width:12%">Tanggal</th><th style="width:18%">Aspek / bentuk</th><th style="width:22%">Murid</th><th>Uraian dan hasil</th></tr></thead><tbody>' + (cat.length ? cat.slice().reverse().map(function (x) { return '<tr><td>' + esc(fTgl(x.tanggal)) + '</td><td>' + esc(x.aspek) + '<br><span style="font-size:8pt">' + esc(x.bentuk) + '</span></td><td>' + esc(x.murid.join(', ')) + '</td><td>' + esc(x.uraian) + (x.hasil ? '<br><i>Hasil:</i> ' + esc(x.hasil) : '') + '</td></tr>'; }).join('') : '<tr><td colspan="4">Belum ada kegiatan.</td></tr>') + '</tbody></table>' +
+      '<h3 style="font-size:11pt;margin:10px 0 4px">C. Refleksi, kendala, dan rekomendasi</h3><table class="pr-tbl"><tbody><tr><td style="width:24%">Refleksi / capaian</td><td style="white-space:pre-wrap">' + esc(q.refleksi || '-') + '</td></tr><tr><td>Kendala</td><td style="white-space:pre-wrap">' + esc(q.kendala || '-') + '</td></tr><tr><td>Rekomendasi</td><td style="white-space:pre-wrap">' + esc(q.rekomendasi || '-') + '</td></tr></tbody></table>' +
+      ttdCetak(ttdKepsek(), ttdOrang('Guru Wali,', d.guru.nama, d.guru.nip), '') + '</div>';
+    cetakHtml(h, { judul: 'Laporan tahunan guru wali', ket: 'A4 tegak' });
+  }).catch(fail);
+};
+// ── Admin → Guru Wali ──
+function adGuruWali() {
+  $('#ad-body').innerHTML = skeleton(2);
+  P.adGw = P.adGw || { kelas: '', guru: '' };
+  return api('guruwali.info', { id_kelas: P.adGw.kelas }).then(function (r) {
+    P.adGw.r = r;
+    if (!P.adGw.kelas && r.kelas.length) { P.adGw.kelas = r.kelas[0].id; return adGuruWali(); }
+    $('#ad-body').innerHTML = '<div class="note info"><i class="bi bi-info-circle"></i><div>Guru wali mendampingi sekelompok murid sejak terdaftar sampai lulus (lintas kelas). Guru yang diberi murid dampingan otomatis mendapat menu <b>Murid Dampingan</b>; tidak perlu peran baru. Pembagian juga bisa lewat kolom <b>guru_wali</b> (email guru) saat impor CSV murid.</div></div>' +
+      '<div class="grid g-2 mt-16"><div class="card pad"><h3>Tetapkan murid dampingan</h3><div class="form-grid mt-12">' + fld({ name: 'guru', id: 'gw-guru', label: 'Guru wali', type: 'select', blank: '— pilih guru —', value: P.adGw.guru, opts: r.guru.map(function (g) { return { v: g.email, l: g.nama + ' (' + g.jumlah + ')' }; }) }) + '</div>' +
+      '<div class="pk-kelas fchips mt-12">' + r.kelas.map(function (k) { return '<button type="button" class="fchip ' + (k.id === P.adGw.kelas ? 'active' : '') + '" data-act="adgw-kls" data-id="' + esc(k.id) + '">' + esc(k.nama) + '</button>'; }).join('') + '</div>' +
+      '<div class="row between mt-12"><label class="check"><input type="checkbox" id="adgw-all"> Pilih semua murid kelas ini</label><span class="xs muted">' + r.murid.length + ' murid</span></div><div class="pk-daftar mt-8" id="adgw-list">' +
+      r.murid.map(function (m) { return '<label class="pk-m" style="cursor:pointer"><input type="checkbox" class="sr" value="' + esc(m.id) + '"><i class="bi bi-circle"></i><span><b>' + esc(m.nama) + '</b><small>' + (m.guru_nama ? 'Guru wali: ' + esc(m.guru_nama) : '<span style="color:var(--rose)">Belum ada guru wali</span>') + '</small></span></label>'; }).join('') + '</div>' +
+      '<div class="row wrap mt-12" style="gap:8px;justify-content:flex-end"><button class="btn" data-act="adgw-lepas"><i class="bi bi-x-lg"></i> Lepas guru wali</button><button class="btn primary" data-act="adgw-set"><i class="bi bi-check-lg"></i> Tetapkan ke guru terpilih</button></div></div>' +
+      '<div class="card"><div class="card-head"><h3>Ringkasan</h3><span class="xs muted">' + (r.aktif - r.tanpa) + '/' + r.aktif + ' murid sudah punya guru wali</span></div>' + (r.tanpa ? '<div class="card-body"><div class="note"><i class="bi bi-exclamation-triangle"></i><div><b>' + r.tanpa + ' murid aktif</b> belum memiliki guru wali.</div></div></div>' : '') +
+      '<div class="tbl-wrap"><table class="tbl" style="min-width:0;width:100%"><thead><tr><th>Guru</th><th style="text-align:right;width:140px">Murid dampingan</th></tr></thead><tbody>' + r.guru.map(function (g) { return '<tr><td>' + esc(g.nama) + '</td><td style="text-align:right">' + (g.jumlah ? '<b>' + g.jumlah + '</b>' : '<span class="muted">0</span>') + '</td></tr>'; }).join('') + '</tbody></table></div></div></div>';
+    $('#gw-guru').addEventListener('change', function (e) { P.adGw.guru = e.target.value; });
+    const list = $$('#adgw-list input');
+    list.forEach(function (c) { c.addEventListener('change', function () { c.parentNode.classList.toggle('on', c.checked); c.nextSibling.className = 'bi ' + (c.checked ? 'bi-check-circle' : 'bi-circle'); }); });
+    $('#adgw-all').addEventListener('change', function (e) { list.forEach(function (c) { c.checked = e.target.checked; c.dispatchEvent(new Event('change')); }); });
+  }).catch(function (e) { isiHtml('#ad-body', errBox(e)); });
+}
+ACT['adgw-kls'] = function (el) { P.adGw.kelas = el.dataset.id; adGuruWali(); };
+function adgwKirim(el, email) {
+  const ids = $$('#adgw-list input:checked').map(function (c) { return c.value; });
+  if (!ids.length) { toast('Pilih murid terlebih dahulu.', 'warn'); return; }
+  run(el, api('guruwali.atur', { email_guru: email, ids: ids })).then(function (r) { toast(email ? r.diubah + ' murid ditetapkan.' : 'Guru wali ' + r.diubah + ' murid dilepas.'); adGuruWali(); }).catch(fail);
+}
+ACT['adgw-set'] = function (el) { if (!P.adGw.guru) { toast('Pilih guru wali terlebih dahulu.', 'warn'); return; } adgwKirim(el, P.adGw.guru); };
+ACT['adgw-lepas'] = function (el) { confirmDlg('Lepas guru wali dari murid yang dipilih?', 'Lepas').then(function (y) { if (y) adgwKirim(el, ''); }); };
+
+// ════════════════════════════════════════════════════════════
+// v1.11 — Rekap absensi mata pelajaran bulanan (cetak). Hanya membaca data absensi yang sudah ada.
+// ════════════════════════════════════════════════════════════
+function rmPage(params, tok) {
+  return apiC('absensi.bulanMeta', {}).then(function (meta) {
+    if (stale(tok)) return;
+    P.rm = P.rm || {}; P.rm.meta = meta;
+    const opsi = [];
+    if (meta.kelas.length) opsi.push({ v: 'kelas', l: 'Per kelas (semua mapel)' });
+    if (meta.ajar.length || meta.semua) opsi.push({ v: 'mapel', l: 'Per mata pelajaran (daftar hadir pertemuan)' });
+    if (!opsi.length) { $('#abs-body').innerHTML = '<div class="card pad">' + empty('bi-printer', 'Tidak ada kelas atau mata pelajaran yang dapat Anda cetak') + '</div>'; return; }
+    const mode = P.rm.mode && opsi.some(function (o) { return o.v === P.rm.mode; }) ? P.rm.mode : opsi[0].v;
+    P.rm.mode = mode;
+    const bulan = P.rm.bulan || S.today.substr(0, 7);
+    let pil = '';
+    if (mode === 'kelas') pil = fld({ name: 'id_kelas', id: 'rm-k', label: 'Kelas', type: 'select', value: P.rm.kelas, opts: (meta.semua ? [{ v: '*', l: 'Semua kelas' }] : []).concat(meta.kelas.map(function (k) { return { v: k.id, l: k.nama }; })) });
+    else if (meta.ajar.length && !meta.semua) pil = fld({ name: 'ajar', id: 'rm-a', label: 'Mapel & kelas', type: 'select', value: P.rm.ajar, opts: meta.ajar.map(function (x, i) { return { v: String(i), l: x.mapel + ' — ' + x.kelas }; }) });
+    else pil = fld({ name: 'id_mapel', id: 'rm-m', label: 'Mata pelajaran', type: 'select', value: P.rm.mapel, opts: meta.mapel.map(function (m) { return { v: m.id, l: m.nama }; }) }) + fld({ name: 'id_kelas', id: 'rm-k', label: 'Kelas', type: 'select', value: P.rm.kelas, opts: meta.kelas.map(function (k) { return { v: k.id, l: k.nama }; }) });
+    $('#abs-body').innerHTML = '<div class="card pad"><h3><i class="bi bi-printer"></i> Cetak rekap absensi mata pelajaran bulanan</h3><p class="xs muted mt-8">Disusun dari absensi mapel yang sudah diisi guru. <b>Per kelas</b>: matriks tanggal × jam ke- beserta mapel dan guru, lalu daftar murid yang tidak hadir (± 2 halaman A4 mendatar). <b>Per mata pelajaran</b>: daftar hadir murid per pertemuan. Jam yang tidak diabsen tampil kosong.</p>' +
+      '<form id="f-rm" class="form-grid mt-12" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))" novalidate>' + fld({ name: 'mode', id: 'rm-mode', label: 'Bentuk', type: 'select', value: mode, opts: opsi }) + pil + fld({ name: 'bulan', id: 'rm-b', label: 'Bulan', type: 'month', value: bulan, maxv: S.today.substr(0, 7) }) +
+      '<div class="field"><label>&nbsp;</label><button class="btn primary" type="submit" id="rm-ok"><i class="bi bi-printer"></i> Siapkan cetak</button></div></form></div>';
+    $('#rm-mode').addEventListener('change', function (e) { P.rm.mode = e.target.value; rmPage({}, S.navTok); });
+    $('#f-rm').addEventListener('submit', function (e) { e.preventDefault(); rmCetak(); });
+  });
+}
+function rmCetak() {
+  const d = formData($('#f-rm')), meta = P.rm.meta;
+  P.rm.bulan = d.bulan;
+  let q = { bulan: d.bulan };
+  if (P.rm.mode === 'kelas') { q.id_kelas = d.id_kelas; P.rm.kelas = d.id_kelas; }
+  else if (d.ajar !== undefined) { const x = meta.ajar[+d.ajar]; P.rm.ajar = d.ajar; q.id_kelas = x.id_kelas; q.id_mapel = x.id_mapel; }
+  else { q.id_kelas = d.id_kelas; q.id_mapel = d.id_mapel; P.rm.kelas = d.id_kelas; P.rm.mapel = d.id_mapel; }
+  if (!d.bulan) { toast('Pilih bulan.', 'warn'); return; }
+  run($('#rm-ok'), Promise.all([api('absensi.bulan', q), siapKop()])).then(function (res) {
+    const r = res[0];
+    if (!r.kelas.length) { toast('Belum ada absensi mapel pada bulan itu.', 'warn'); return; }
+    if (P.rm.mode === 'kelas') cetakRmKelas(r); else cetakRmMapel(r);
+  }).catch(fail);
+}
+function rmHari(r) {
+  const y = +r.bulan.substr(0, 4), mo = +r.bulan.substr(5, 2), n = new Date(y, mo, 0).getDate(), lib = {}, out = [];
+  (r.libur || []).forEach(function (x) { lib[x.tanggal] = x.k; });
+  for (let i = 1; i <= n; i++) {
+    const d = r.bulan + '-' + (i < 10 ? '0' : '') + i, w = new Date(y, mo - 1, i).getDay();
+    if (w === 0 || (w === 6 && r.hs !== 6)) continue;
+    out.push({ d: d, w: w, lib: lib[d] || '' });
+  }
+  return out;
+}
+function rmJam(s) { const p = String(s || '').split('-'); const a = parseInt(p[0], 10) || 0; return [a, p[1] ? (parseInt(p[1], 10) || a) : a]; }
+const RM_SG = { S: 'S', I: 'I', A: 'A', T: 'T' };
+function cetakRmKelas(r) {
+  const hari = rmHari(r), jm = Math.min(Math.max(r.jamMaks || 8, 1), 12);
+  const html = r.kelas.map(function (k) {
+    const sel = {};
+    k.sesi.forEach(function (s) { const j = rmJam(s.jam_ke); for (let x = j[0]; x <= j[1]; x++) { const key = s.tanggal + '|' + x; (sel[key] = sel[key] || []).push(s); } });
+    // jam terakhir yang dipakai bulan ini (agar kolom tidak berlebih)
+    let maxJ = 1; k.sesi.forEach(function (s) { maxJ = Math.max(maxJ, rmJam(s.jam_ke)[1]); }); maxJ = Math.max(Math.min(maxJ, jm), Math.min(8, jm));
+    const cols = []; for (let x = 1; x <= maxJ; x++) cols.push(x);
+    const adaSesi = {}; k.sesi.forEach(function (s) { adaSesi[s.tanggal] = 1; });
+    const mat = '<table class="pr-tbl pr-mini" style="font-size:7.6pt"><thead><tr><th style="width:52px">Tanggal</th>' + cols.map(function (x) { return '<th>Jam ' + x + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      hari.map(function (h) {
+        const lab = HRI[h.w].substr(0, 3) + ' ' + (+h.d.substr(8, 2));
+        if (h.lib && !adaSesi[h.d]) return '<tr><td style="text-align:left;background:#e5e7eb">' + lab + '</td><td colspan="' + cols.length + '" style="background:#e5e7eb;color:#444">Libur — ' + esc(h.lib) + '</td></tr>';
+        return '<tr><td style="text-align:left">' + lab + '</td>' + cols.map(function (x) { const ss = sel[h.d + '|' + x]; return '<td>' + (ss ? ss.map(function (s) { return esc(s.kode) + (s.tidak.length ? '·<b>' + s.tidak.length + '</b>' : ''); }).join('/') : '') + '</td>'; }).join('') + '</tr>';
+      }).join('') + '</tbody></table>';
+    const leg = '<table class="pr-tbl" style="font-size:8pt;margin-top:4px"><thead><tr><th style="width:9%">Kode</th><th>Mata pelajaran</th><th>Guru</th><th style="width:12%">Pertemuan diabsen</th></tr></thead><tbody>' + k.mapel.map(function (m) { return '<tr><td style="text-align:center"><b>' + esc(m.kode) + '</b></td><td>' + esc(m.nama) + '</td><td>' + esc(m.guru || '-') + '</td><td style="text-align:center">' + m.sesi + '</td></tr>'; }).join('') + '</tbody></table>' +
+      '<div style="font-size:8pt;margin-top:2px">Cara membaca: <b>MAT·2</b> = Matematika diabsen, 2 murid tidak hadir (nama di halaman berikut). Kode tanpa angka = semua hadir. Sel kosong = tidak ada absensi pada jam itu. Abu-abu = libur.</div>';
+    const per = {};
+    k.sesi.forEach(function (s) { s.tidak.forEach(function (t) { const o = per[t.id] = per[t.id] || { nama: t.nama, S: 0, I: 0, A: 0, T: 0, r: [] }; o[t.s] = (o[t.s] || 0) + 1; o.r.push(+s.tanggal.substr(8, 2) + '/' + (+s.tanggal.substr(5, 2)) + ' j' + s.jam_ke.replace('-', '–') + ' ' + s.kode + ' ' + t.s); }); });
+    const daf = Object.keys(per).map(function (id) { return per[id]; }).sort(function (a, b) { return (b.A - a.A) || (String(a.nama).toLowerCase() < String(b.nama).toLowerCase() ? -1 : 1); });
+    const hal2 = '<table class="pr-tbl" style="font-size:8.5pt"><thead><tr><th style="width:4%">No</th><th style="width:22%">Nama murid</th><th style="width:4%">S</th><th style="width:4%">I</th><th style="width:4%">A</th><th style="width:4%">T</th><th>Rincian (tanggal · jam ke- · mapel · status)</th></tr></thead><tbody>' +
+      (daf.length ? daf.map(function (o, i) { return '<tr><td style="text-align:center">' + (i + 1) + '</td><td>' + esc(o.nama) + '</td><td style="text-align:center">' + (o.S || '') + '</td><td style="text-align:center">' + (o.I || '') + '</td><td style="text-align:center">' + (o.A ? '<b>' + o.A + '</b>' : '') + '</td><td style="text-align:center">' + (o.T || '') + '</td><td>' + esc(o.r.join('; ')) + '</td></tr>'; }).join('') : '<tr><td colspan="7" style="text-align:center">Semua murid hadir pada seluruh pertemuan yang diabsen.</td></tr>') + '</tbody></table>' +
+      '<div style="font-size:8pt">S sakit · I izin · A alpa · T terlambat. Murid yang selalu hadir tidak dicantumkan. Alpa berulang di jam tengah hari perlu ditindaklanjuti wali kelas/Guru BK.</div>';
+    const sub = blnPanjang(r.bulan) + ' · Wali kelas: ' + (k.wali || '-') + ' · ' + k.murid.length + ' murid · ' + k.sesi.length + ' pertemuan diabsen';
+    return '<div class="pr-doc pr-break">' + kopCetak({}) + '<h2 class="pr-title">REKAP KEHADIRAN PER MATA PELAJARAN · KELAS ' + esc(k.kelas) + '</h2><div class="pr-sub">' + esc(sub) + '</div>' + mat + leg + '</div>' +
+      '<div class="pr-doc pr-break"><h2 class="pr-title">MURID YANG TIDAK HADIR PADA JAM PELAJARAN · KELAS ' + esc(k.kelas) + '</h2><div class="pr-sub">' + esc(blnPanjang(r.bulan)) + '</div>' + hal2 + ttdCetak(ttdKepsek(), ttdOrang('Wali Kelas ' + esc(k.kelas) + ',', k.wali, k.waliNip), '') + '</div>';
+  }).join('');
+  cetakHtml(html, { landscape: true, margin: '8mm', judul: 'Rekap absensi mapel bulanan' + (r.kelas.length === 1 ? ' · ' + r.kelas[0].kelas : ' · ' + r.kelas.length + ' kelas'), ket: blnPanjang(r.bulan) + ' · A4 mendatar' });
+}
+function cetakRmMapel(r) {
+  const k = r.kelas[0], ses = k.sesi;
+  const head = '<tr><th rowspan="2" style="width:22px">No</th><th rowspan="2" style="text-align:left">Nama murid</th>' + ses.map(function (s) { return '<th>' + (+s.tanggal.substr(8, 2)) + '</th>'; }).join('') + '<th rowspan="2">S</th><th rowspan="2">I</th><th rowspan="2">A</th><th rowspan="2">T</th><th rowspan="2">%</th></tr><tr>' + ses.map(function (s) { return '<th style="font-weight:400;font-size:6.5pt">j' + esc(s.jam_ke) + '</th>'; }).join('') + '</tr>';
+  const body = k.murid.map(function (m, i) {
+    const c = { H: 0, S: 0, I: 0, A: 0, T: 0, n: 0 };
+    const sel = ses.map(function (s) { const st = s.st[m.id]; if (st) { c[st]++; c.n++; } return '<td>' + (st ? (st === 'H' ? '•' : '<b>' + st + '</b>') : '') + '</td>'; }).join('');
+    return '<tr><td>' + (i + 1) + '</td><td style="text-align:left;white-space:nowrap">' + esc(m.nama) + '</td>' + sel + '<td>' + (c.S || '') + '</td><td>' + (c.I || '') + '</td><td>' + (c.A ? '<b>' + c.A + '</b>' : '') + '</td><td>' + (c.T || '') + '</td><td>' + (c.n ? Math.round((c.H + c.T) * 1000 / c.n) / 10 : '-') + '</td></tr>';
+  }).join('');
+  const guru = ses.map(function (s) { return s.guru; }).filter(function (x, i, a) { return x && a.indexOf(x) === i; });
+  const pengampu = (k.mapel[0] && k.mapel[0].guru) || guru.join(', ');
+  const html = '<div class="pr-doc">' + kopCetak({}) + '<h2 class="pr-title">DAFTAR HADIR MATA PELAJARAN ' + esc((r.mapelNama || '').toUpperCase()) + '</h2><div class="pr-sub">Kelas ' + esc(k.kelas) + ' · ' + esc(blnPanjang(r.bulan)) + ' · Guru: ' + esc(pengampu || '-') + ' · ' + ses.length + ' pertemuan</div>' +
+    (ses.length ? '<table class="pr-tbl pr-mini" style="font-size:7.6pt"><thead>' + head + '</thead><tbody>' + body + '</tbody></table>' : '<p>Belum ada pertemuan yang diabsen pada bulan ini.</p>') +
+    '<div style="font-size:8pt;margin-top:4px">Baris atas = tanggal, baris bawah = jam ke-. • hadir · S sakit · I izin · A alpa · T terlambat. % = kehadiran dari pertemuan yang diabsen.</div>' +
+    ttdCetak(ttdKepsek(), ttdOrang('Guru Mata Pelajaran,', guru[0] || pengampu, ''), '') + '</div>';
+  cetakHtml(html, { landscape: true, margin: '8mm', judul: 'Daftar hadir ' + (r.mapelNama || '') + ' · ' + k.kelas, ket: blnPanjang(r.bulan) + ' · A4 mendatar' });
+}
