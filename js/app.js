@@ -9,7 +9,7 @@
    ============================================================ */
 
 // ── Util ──
-const PENGEMBANG = 'Iwa Salji Elbi Satria', PENGEMBANG_SEKOLAH = 'UPT SMPN 3 Batipuh', VERSI_APP = '1.11';
+const PENGEMBANG = 'Iwa Salji Elbi Satria', PENGEMBANG_SEKOLAH = 'UPT SMPN 3 Batipuh', VERSI_APP = '1.12';
 const $ = function (s, r) { return (r || document).querySelector(s); };
 // Pengaman: callback lama yang selesai setelah pengguna pindah halaman tidak boleh memunculkan galat.
 window.addEventListener('unhandledrejection', function (e) { const m = String(e.reason && e.reason.message || ''); if (/of null|of undefined/.test(m)) { e.preventDefault(); if (window.console) console.warn('[diabaikan]', m); } });
@@ -78,7 +78,7 @@ function loadEnd() { S.pending = Math.max(0, S.pending - 1); if (!S.pending) $('
 // Setiap aksi yang mengubah data otomatis mengosongkan cache sehingga tampilan tidak basi.
 const READ_ACTIONS = { 'auth.status': 1, 'boot': 1, 'notif.get': 1, 'dashboard.get': 1, 'dashboard.distribusi': 1, 'laporan.rekap': 1, 'murid.cari': 1, 'absensi.meta': 1, 'absensi.riwayat': 1, 'absensi.roster': 1, 'harian.meta': 1, 'harian.roster': 1, 'harian.rekap': 1, 'pola.list': 1, 'kasus.list': 1, 'kasus.detail': 1, 'bk.daftar': 1, 'layanan.daftar': 1, 'layanan.get': 1, 'pengguna.ringkas': 1, 'monitoring.daftar': 1, 'ortu.siapkan': 1, 'ortu.riwayat': 1, 'riwayat.murid': 1, 'admin.meta': 1, 'admin.pengampuInfo': 1, 'admin.list': 1, 'admin.config.get': 1, 'admin.kasusAktif': 1, 'admin.pemeliharaan': 1, 'admin.log': 1, 'arsip.ringkasan': 1, 'naik.pratinjau': 1, 'program.daftar': 1, 'program.detail': 1, 'instrumen.daftar': 1, 'instrumen.get': 1, 'instrumen.responden': 1, 'instrumen.jawabGet': 1, 'instrumen.hasil': 1, 'instrumen.perMurid': 1, 'instrumen.jawabDetail': 1, 'instrumen.ekspor': 1, 'rekap.tahunan': 1, 'kelas.saya': 1, 'kop.get': 1, 'harian.periode': 1, 'instrumen.profilKelas': 1, 'instrumen.cetakProfil': 1, 'program.kebutuhan': 1, 'program.dokumen': 1 };
 const CACHEABLE = { 'dashboard.get': 1, 'dashboard.distribusi': 1, 'murid.cari': 1, 'absensi.meta': 1, 'harian.meta': 1, 'kasus.list': 1, 'kasus.detail': 1, 'bk.daftar': 1, 'layanan.daftar': 1, 'pengguna.ringkas': 1, 'monitoring.daftar': 1, 'riwayat.murid': 1, 'admin.meta': 1, 'admin.list': 1, 'program.daftar': 1, 'program.detail': 1, 'instrumen.daftar': 1, 'instrumen.hasil': 1, 'instrumen.perMurid': 1, 'rekap.tahunan': 1, 'kelas.saya': 1, 'laporan.rekap': 1, 'harian.rekap': 1, 'absensi.riwayat': 1, 'hadir.daftar': 1, 'temu.daftar': 1, 'ortu.riwayat': 1, 'ortu.siapkan': 1, 'ortu.riwayat': 1, 'layanan.get': 1, 'instrumen.get': 1, 'instrumen.responden': 1, 'instrumen.jawabDetail': 1, 'instrumen.jawabGet': 1, 'kehadiran.get': 1, 'admin.config.get': 1, 'admin.pengampuInfo': 1, 'admin.kasusAktif': 1, 'arsip.ringkasan': 1, 'admin.pemeliharaan': 1, 'temu.daftar': 1, 'naik.pratinjau': 1, 'kop.get': 1, 'harian.periode': 1, 'instrumen.profilKelas': 1, 'program.kebutuhan': 1, 'program.dokumen': 1 };
-['dampingan.daftar', 'dampingan.catatan', 'dampingan.rencana', 'dampingan.laporan', 'guruwali.info', 'absensi.bulan', 'absensi.bulanMeta', 'poin.meta', 'poin.daftar', 'poin.murid', 'poin.saya', 'poin.verifikasi', 'poin.rekap', 'hadir.daftar', 'temu.daftar', 'pindai.siap', 'kehadiran.get', 'muat.banyak', 'ortu.suratPratinjau', 'surat.contoh', 'admin.diagSurat', 'kartu.data', 'berkas.ambil', 'laporan.pdf', 'rekap.tahunanPdf'].forEach(function (a) { READ_ACTIONS[a] = 1; });
+['rapat.kelas', 'bk.ceklist', 'dampingan.daftar', 'dampingan.catatan', 'dampingan.rencana', 'dampingan.laporan', 'guruwali.info', 'absensi.bulan', 'absensi.bulanMeta', 'poin.meta', 'poin.daftar', 'poin.murid', 'poin.saya', 'poin.verifikasi', 'poin.rekap', 'hadir.daftar', 'temu.daftar', 'pindai.siap', 'kehadiran.get', 'muat.banyak', 'ortu.suratPratinjau', 'surat.contoh', 'admin.diagSurat', 'kartu.data', 'berkas.ambil', 'laporan.pdf', 'rekap.tahunanPdf'].forEach(function (a) { READ_ACTIONS[a] = 1; });
 // Cache klien "tampilkan dulu, perbarui kemudian" (stale-while-revalidate):
 //  - Data segar (≤ 2 menit) dipakai langsung.
 //  - Data lebih tua (≤ 30 menit) tetap DITAMPILKAN SEKETIKA, lalu diperbarui diam-diam; bila berubah dan pengguna belum
@@ -92,7 +92,8 @@ const CC_REL = {
   program: ['program', 'layanan'], instrumen: ['instrumen', 'riwayat'],
   wali: ['kasus', 'riwayat', 'kelas', 'dashboard', 'monitoring'], notif: ['notif'],
   poin: ['poin', 'riwayat', 'kelas', 'kasus', 'notif'],
-  dampingan: ['dampingan', 'riwayat'], guruwali: ['dampingan', 'admin', 'riwayat', 'murid']
+  dampingan: ['dampingan', 'riwayat', 'rapat'], guruwali: ['dampingan', 'admin', 'riwayat', 'murid'],
+  pola: ['dashboard', 'kelas', 'rapat'], jadwal: ['dashboard', 'notif']
 };
 function ccClear(action) {
   const dom = action ? action.split('.')[0] : '';
@@ -106,7 +107,7 @@ function ccClear(action) {
 // ── Cache klien yang bertahan setelah aplikasi ditutup: halaman yang pernah dibuka tampil seketika saat dibuka lagi. ──
 // Disimpan di perangkat (localStorage bila "Ingat saya", selain itu sessionStorage). Data sangat rahasia tidak disimpan.
 ['poin.meta', 'poin.daftar', 'poin.rekap', 'dampingan.daftar', 'absensi.bulanMeta'].forEach(function (a) { CACHEABLE[a] = 1; });
-const CC_TIDAK_DISIMPAN = { 'poin.daftar': 1, 'kasus.detail': 1, 'layanan.get': 1, 'instrumen.jawabDetail': 1, 'instrumen.jawabGet': 1, 'riwayat.murid': 1, 'instrumen.perMurid': 1, 'ortu.siapkan': 1, 'admin.config.get': 1 };
+const CC_TIDAK_DISIMPAN = { 'rapat.kelas': 1, 'poin.daftar': 1, 'kasus.detail': 1, 'layanan.get': 1, 'instrumen.jawabDetail': 1, 'instrumen.jawabGet': 1, 'riwayat.murid': 1, 'instrumen.perMurid': 1, 'ortu.siapkan': 1, 'admin.config.get': 1 };
 const CC_SIMPAN_MAKS = 1800000, CC_UMUR_SIMPAN = 12 * 3600000;
 let CC_TMR = 0;
 function ccSimpanKey() { const e = sget('sk_email') || (S.user && S.user.email) || ''; return e ? 'sk_cc_' + e : ''; }
@@ -868,7 +869,7 @@ function navigateTo(page, params, keepScroll, quiet) {
   const c = $('#app-container');
   if (!quiet) c.innerHTML = skeleton(3);
   if (!keepScroll) window.scrollTo(0, 0);
-  Promise.resolve().then(function () { return PAGES[page](S.params, tok); }).catch(function (e) {
+  Promise.resolve().then(function () { return PAGES[page](S.params, tok); }).then(function () { if (tok === S.navTok) sisipBantu(page); }).catch(function (e) {
     if (tok !== S.navTok) return;
     c.innerHTML = errBox(e, true);
   });
@@ -895,7 +896,7 @@ document.addEventListener('click', function (e) {
 function bootKey() { return 'sk_boot_' + (sget('sk_email') || S.token || 'g') + '_' + (S.mode || ''); }
 function applyBoot(b, dariCache) {
   S.mode = b.user.mode || '';
-  S.user = b.user; ccMuatSimpanan(); S.cfg = b.config; S.menu = b.menu; S.refs = b.refs; S.today = b.hariIni; S.kelasWali = b.kelasWali || []; S.kelasAkses = b.kelasAkses || null; S.batasKoreksi = b.batasKoreksi; S.jamMaks = b.jamMaks || 10; S.saranTA = b.saranTA || null;
+  S.user = b.user; ccMuatSimpanan(); S.cfg = b.config; S.menu = b.menu; S.versiServer = b.versiServer || ''; S.refs = b.refs; S.today = b.hariIni; S.kelasWali = b.kelasWali || []; S.kelasAkses = b.kelasAkses || null; S.batasKoreksi = b.batasKoreksi; S.jamMaks = b.jamMaks || 10; S.saranTA = b.saranTA || null;
   if (b.notif) S.notif = b.notif;
   document.title = (b.config.namaSekolah ? b.config.namaSekolah + ' · ' : '') + 'SIKOLAB BK';
   show('#splash', false); show('#login-root', false); show('#shell', true);
@@ -1013,14 +1014,15 @@ PAGES.beranda = function (_, tok) {
     const acts = (hasRole('guru_mapel') ? '<button class="btn" data-act="nav" data-page="absensi"><i class="bi bi-person-check"></i> Presensi Kelas</button>' : '') +
       (lapor ? '<button class="btn primary" data-act="nav" data-page="lapor"><i class="bi bi-plus-circle"></i> Lapor Kejadian</button>' : '');
     const nk = d.kpis.length;
-    let h = pageHead(tglPanjang(d.tanggal), sapaan() + ', ' + first, ROLE_DESC[d.tipe] || '', acts);
+    let h = pageHead(tglPanjang(d.tanggal), sapaan() + ', ' + first, ROLE_DESC[d.tipe] || '', acts) + bannerVersi();
     h += '<div class="grid g-kpi ' + (nk >= 6 ? 'k6' : nk === 5 ? 'k5' : 'k4') + '">' + d.kpis.map(function (k) {
       return '<button class="kpi ' + esc(k.color) + '" data-act="kpi" data-go="' + esc(k.go) + '" data-filter="' + esc(k.filter) + '"><span class="k-ic"><i class="bi ' + esc(k.icon) + '"></i></span><div class="k-lb">' + esc(k.label) + '</div><div><div class="k-v">' + esc(k.value) + '</div><div class="k-s">' + esc(k.sub) + '</div></div></button>';
     }).join('') + '</div>';
 
     if (d.kelasHariIni && d.kelasHariIni.length) {
-      h += '<div class="card mt-16"><div class="card-head"><h3>Kelas yang Anda ampu</h3><span class="xs muted">Ketuk untuk mulai absensi</span></div><div class="card-body"><div class="grid g-3">' + d.kelasHariIni.map(function (k) {
-        return '<button class="card pad" style="text-align:left;cursor:pointer;color:inherit" data-act="absen-go" data-k="' + esc(k.id_kelas) + '" data-m="' + esc(k.id_mapel) + '"><div class="row between"><b class="fw7" style="font-family:var(--font-h)">' + esc(k.kelas) + '</b>' + (k.sudah ? '<span class="chip st-Dipantau"><i class="bi bi-check2"></i> Tercatat</span>' : '<span class="chip st-Baru">Belum</span>') + '</div><div class="xs muted mt-8">' + esc(k.mapel) + '</div></button>';
+      const adaJdw = d.kelasHariIni.some(function (k) { return k.jadwal; });
+      h += '<div class="card mt-16"><div class="card-head"><h3>' + (adaJdw ? 'Jadwal Anda hari ini' : 'Kelas yang Anda ampu') + '</h3><span class="xs muted">Ketuk untuk mulai absensi</span></div><div class="card-body"><div class="grid g-3">' + d.kelasHariIni.map(function (k) {
+        return '<button class="card pad" style="text-align:left;cursor:pointer;color:inherit" data-act="absen-go" data-k="' + esc(k.id_kelas) + '" data-m="' + esc(k.id_mapel) + '" data-j="' + esc(k.jam || '') + '"><div class="row between"><b class="fw7" style="font-family:var(--font-h)">' + esc(k.kelas) + '</b>' + (k.sudah ? '<span class="chip st-Dipantau"><i class="bi bi-check2"></i> Tercatat</span>' : '<span class="chip st-Baru">Belum</span>') + '</div><div class="xs muted mt-8">' + esc(k.mapel) + (k.jam ? ' · Jam ' + esc(k.jam) : '') + '</div></button>';
       }).join('') + '</div></div></div>';
     }
 
@@ -1030,12 +1032,14 @@ PAGES.beranda = function (_, tok) {
         return '<button class="card pad har-kls" data-act="ke-harian"><div class="row between"><b class="fw7" style="font-family:var(--font-h)">' + esc(k.nama) + '</b>' + (k.tercatat ? '<span class="chip st-Dipantau"><i class="bi bi-check2"></i> Tercatat</span>' : (k.qr ? '<span class="chip blue">Sebagian</span>' : '<span class="chip st-Baru">Belum</span>')) + '</div><div class="xs muted mt-8">' + (k.tercatat ? 'Hadir ' + k.hadir + '/' + k.jumlah + (k.S ? ' · S ' + k.S : '') + (k.I ? ' · I ' + k.I : '') + (k.A ? ' · <b style="color:var(--rose)">A ' + k.A + '</b>' : '') : (k.qr ? '<i class="bi bi-qr-code-scan"></i> ' + k.qr + '/' + k.jumlah + ' sudah memindai · lengkapi' : k.jumlah + ' murid')) + '</div></button>';
       }).join('') + '</div></div></div>';
     }
-    h += '<div class="grid g-2 mt-16"><div class="col gap-16">';
+    const KIRI = '<div class="grid g-2 mt-16"><div class="col gap-16">', KANAN = '</div><div class="col gap-16">';
+    h += KIRI;
+    if (d.tipe === 'guru_bk') h += tugasBKHtml();
     if (d.tipe === 'guru_bk' || d.tipe === 'wali_kelas') {
       h += '<div class="card"><div class="card-head"><div><h3><i class="bi bi-radar" style="color:var(--rose)"></i> Deteksi Dini Pola Kehadiran</h3><div class="xs muted">30 hari terakhir · ' + d.polaTotal + ' murid ditandai' + (d.polaKritis ? ' · ' + d.polaKritis + ' kritis' : '') + '</div></div></div><div style="margin-top:8px">' +
         (d.pola.length ? d.pola.map(function (x) {
           return '<div class="pola-item"><div class="row between wrap"><div class="row"><div class="avatar" style="width:34px;height:34px;font-size:11px;background:' + (x.level === 'kritis' ? 'var(--rose)' : x.level === 'perhatian' ? 'var(--amber)' : 'var(--teal)') + '">' + esc(initials(x.nama)) + '</div><div><div class="fw7" style="font-family:var(--font-h)">' + esc(x.nama) + '</div><div class="xs muted">' + esc(x.kelas) + ' · NIS ' + esc(x.nis) + '</div></div></div>' + chipLevel(x.level) + '</div>' +
-            '<div class="muted-2">' + esc(x.deskripsi) + '</div><div class="row wrap"><button class="btn sm" data-act="open-murid" data-id="' + esc(x.id_murid) + '"><i class="bi bi-activity"></i> Garis waktu</button><button class="btn sm dark" data-act="pola-rujuk" data-id="' + esc(x.id_murid) + '"><i class="bi bi-send"></i> Buat rujukan</button></div></div>';
+            '<div class="muted-2">' + esc(x.deskripsi) + '</div>' + (polaTanda(x) ? '<div class="row wrap" style="gap:6px">' + polaTanda(x) + '</div>' : '') + '<div class="row wrap"><button class="btn sm" data-act="open-murid" data-id="' + esc(x.id_murid) + '"><i class="bi bi-activity"></i> Garis waktu</button><button class="btn sm dark" data-act="pola-rujuk" data-id="' + esc(x.id_murid) + '"><i class="bi bi-send"></i> Buat rujukan</button>' + polaTombol(x) + '</div></div>';
         }).join('') : empty('bi-shield-check', 'Tidak ada pola yang mengkhawatirkan', 'Sistem memeriksa pola alpa berulang, bolos di tengah hari, dan keterlambatan.')) + '</div></div>';
       P.polaIdx = {}; d.pola.forEach(function (x) { P.polaIdx[x.id_murid] = x; });
     }
@@ -1049,16 +1053,21 @@ PAGES.beranda = function (_, tok) {
     if (d.tipe === 'kepsek') {
       h += '<div class="card pad"><h3>Laporan resmi</h3><p class="muted mt-8" style="margin-top:4px">Unduh rekap kehadiran dan kasus per periode dalam bentuk PDF untuk rapat dan pelaporan.</p><div class="row wrap mt-16"><button class="btn dark" data-act="nav" data-page="laporan"><i class="bi bi-file-earmark-pdf"></i> Laporan & Rekap</button></div></div>';
     }
-    h += '</div><div class="col gap-16">';
+    h += KANAN;
+    if (d.tipe === 'guru_bk') h += '<div class="card" id="bk-ceklist"><div class="card-body">' + skeleton(1) + '</div></div>';
     if (d.insight && d.insight.length) {
       h += '<div class="insight"><span class="ai-tag"><i class="bi bi-stars"></i> Insight otomatis</span><ul>' + d.insight.map(function (t) { return '<li><i class="bi bi-lightbulb"></i><span>' + esc(t) + '</span></li>'; }).join('') + '</ul><div class="xs muted mt-12">Dihitung dari data absensi dan kasus (agregat). Bukan diagnosis.</div></div>';
     }
     if (d.distribusi) {
       h += '<div class="card"><div class="card-head"><div><h3>Distribusi Kasus</h3><div class="xs muted">Per kategori kejadian</div></div><div class="fchips" id="dist-tabs">' + ['minggu', 'bulan', 'semester'].map(function (r) { return '<button class="fchip ' + (r === 'bulan' ? 'active' : '') + '" data-act="dist" data-r="' + r + '">' + { minggu: 'Minggu', bulan: 'Bulan', semester: 'Semester' }[r] + '</button>'; }).join('') + '</div></div><div class="card-body"><div class="chart-box sm"><canvas id="ch-dist" aria-label="Grafik distribusi kasus"></canvas></div><div class="legend mt-12" id="dist-leg"></div></div></div>';
     }
-    h += '</div></div>';
+    if (d.tipe === 'guru_bk') h += petaBK();
+    // Kolom kanan kosong (mis. Beranda guru mapel): tampilkan satu kolom penuh.
+    if (h.slice(-KANAN.length) === KANAN) { const i = h.lastIndexOf(KIRI); h = h.slice(0, i) + '<div class="col gap-16 mt-16">' + h.slice(i + KIRI.length, -KANAN.length) + '</div>'; }
+    else h += '</div></div>';
     $('#app-container').innerHTML = h;
     if (d.distribusi) drawDist(d.distribusi);
+    if (d.tipe === 'guru_bk') ceklistBK();
   });
 };
 ACT.kpi = function (el) {
@@ -1080,7 +1089,7 @@ ACT.dist = function (el) {
 };
 ACT['ke-harian'] = function () { navigateTo('absensi', { tab: 'harian' }); };
 ACT['ke-tahun'] = function () { navigateTo('admin', { tab: 'tahun' }); };
-ACT['absen-go'] = function (el) { navigateTo('absensi', { id_kelas: el.dataset.k, id_mapel: el.dataset.m }); };
+ACT['absen-go'] = function (el) { navigateTo('absensi', { id_kelas: el.dataset.k, id_mapel: el.dataset.m, jam: el.dataset.j || '' }); };
 
 /** Baris kasus (dipakai di beranda dan daftar kasus). */
 function caseRow(k) {
@@ -1206,7 +1215,7 @@ function mapelPage(params, tok) {
       f.addEventListener('submit', function (e) { e.preventDefault(); absLoad($('button[type=submit]', f)); });
       if (params.id_kelas) {
         const i = meta.diampu.findIndex(function (x) { return x.id_kelas === params.id_kelas && x.id_mapel === params.id_mapel; });
-        if (i >= 0) { $('[name=sel]', f).value = i; jamIngat(); absLoad(); }
+        if (i >= 0) { $('[name=sel]', f).value = i; jamIngat(); if (params.jam) setJamForm(params.jam); absLoad(); }
       }
     }
     $('#f-hist').addEventListener('submit', function (e) { e.preventDefault(); histLoad(); });
@@ -1321,6 +1330,12 @@ ACT['abs-save'] = function (el) {
     $('#roster-box').innerHTML = '<div class="card pad">' + empty('bi-check2-circle', 'Absensi ' + x.kelas + ' · ' + x.mapel + ' tersimpan', 'Dikirim ke server di latar belakang; Anda bisa langsung mencatat kelas berikutnya.') + '</div>';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+  // v1.12: peringatan bila bertentangan dengan absensi harian (murid tercatat Sakit/Izin/Alpa di harian, tetapi ditandai hadir)
+  const tabrak = a.rows.filter(function (m) { return m.harian && m.harian !== 'H' && m.harian !== 'T' && (m.status === 'H' || m.status === 'T'); });
+  if (tabrak.length) {
+    confirmDlg(tabrak.length + ' murid tercatat ' + tabrak.slice(0, 4).map(function (m) { return m.nama.split(' ')[0] + ' (' + (ST_NAMA[m.harian] || m.harian) + ')'; }).join(', ') + (tabrak.length > 4 ? ', …' : '') + ' pada absensi harian, tetapi Anda tandai hadir. Yakin data ini benar?', 'Ya, simpan', false, 'Berbeda dengan absensi harian').then(function (ok) { if (ok) go(); });
+    return;
+  }
   if (c.A >= Math.ceil(a.rows.length / 2) && a.rows.length >= 4) {
     confirmDlg('Lebih dari separuh murid ditandai Alpa (' + c.A + ' dari ' + a.rows.length + '). Mohon dipastikan sebelum menyimpan.', 'Ya, simpan', false, 'Periksa kembali').then(function (ok) { if (ok) go(); });
   } else go();
@@ -1578,6 +1593,17 @@ const MODE_LAPOR = [
 PAGES.lapor = function (params, tok) {
   const isBK = hasRole('guru_bk');
   P.lap = { murid: null, murids: [], pkKelas: '', kategori: S.refs.kejadian[0] || '', urgensi: ((isBK ? S.refs.urgensi[1] : S.refs.urgensi[S.refs.urgensi.length - 1]) || S.refs.urgensi[0] || {}).nama || '', file: null, mode: isBK ? 'rujuk' : 'info' };
+  // v1.12: cara penanganan terakhir diingat; draf yang belum terkirim dipulihkan
+  const modeOk = function (v) { return MODE_LAPOR.some(function (x) { return x.v === v; }); };
+  if (!isBK && modeOk(lstore('sk_lapmode') || '')) P.lap.mode = lstore('sk_lapmode');
+  const drf = !params.id_murid ? lapDrafAmbil() : null;
+  if (drf) {
+    P.lap.draf = drf;
+    if (drf.kat && S.refs.kejadian.indexOf(drf.kat) >= 0) P.lap.kategori = drf.kat;
+    if (drf.urg) P.lap.urgensi = drf.urg;
+    if (!isBK && modeOk(drf.mode || '')) P.lap.mode = drf.mode;
+    if (drf.murids && drf.murids.length) { P.lap.murids = drf.murids; P.lap.pkKelas = drf.murids[0].id_kelas || ''; }
+  }
   const render = function () {
     if (stale(tok)) return;
     const l = P.lap;
@@ -1616,9 +1642,10 @@ PAGES.lapor = function (params, tok) {
       if (!validate(f, d, rules)) return;
       if (!isBK && P.lap.mode === 'info' && urgIdx(P.lap.urgensi) === 0) { toast('Laporan mendesak harus ditangani Guru BK. Pilih cara penanganan lain.', 'err'); return; }
       d.kategori = P.lap.kategori; d.urgensi = P.lap.urgensi; d.berkas = P.lap.file; d.mode = P.lap.mode;
-      run($('#lap-kirim'), api('kejadian.buat', d)).then(function (r) { lapSukses(r); }).catch(fail);
+      run($('#lap-kirim'), api('kejadian.buat', d)).then(function (r) { lapDrafHapus(); if (!isBK) lstore('sk_lapmode', P.lap.mode); lapSukses(r); }).catch(fail);
     });
     wirePicker();
+    lapSetelahRender(params);
   };
   if (params.id_murid) {
     apiC('murid.cari', { q: params.nama || '' }).then(function (rows) { const m = rows.filter(function (x) { return x.id === params.id_murid; })[0]; if (m) { P.lap.murids = [m]; P.lap.pkKelas = m.id_kelas; } render(); }).catch(function () { render(); });
@@ -2292,7 +2319,9 @@ function rwLoad(id, tok) {
     if (d.bolehDampingan) act.push('<button class="btn primary" data-act="gw-catat" data-id="' + esc(m.id) + '"><i class="bi bi-journal-plus"></i> Catat pendampingan</button>');
     if (d.bolehLapor) act.push('<button class="btn" data-act="lap-murid" data-id="' + esc(m.id) + '" data-n="' + esc(m.nama) + '"><i class="bi bi-plus-circle"></i> Lapor kejadian</button>');
     if (d.bolehOrtu) act.push('<button class="btn blue" data-act="wa-murid" data-id="' + esc(m.id) + '"><i class="bi bi-whatsapp"></i> Hubungi orang tua</button>');
-    act.push('<button class="btn ghost" data-act="rw-cetak" title="Cetak ringkasan"><i class="bi bi-printer"></i></button>');
+    if (hasAny(['wali_kelas', 'guru_bk', 'waka', 'kepsek', 'admin']) || d.bolehDampingan) act.push('<button class="btn" data-act="gw-cetak" title="Cetak garis waktu untuk rapat atau orang tua"><i class="bi bi-printer"></i> Cetak</button>');
+    else act.push('<button class="btn ghost" data-act="rw-cetak" title="Cetak ringkasan"><i class="bi bi-printer"></i></button>');
+    if (hasAny(['wali_kelas', 'guru_bk', 'waka', 'kepsek', 'admin'])) act.push('<button class="btn ghost" data-act="rw-rapat" title="Rekap satu kelas untuk rapat"><i class="bi bi-table"></i> Rekap kelas</button>');
     const ab = r.absenHarian || {};
     let h = '<button class="btn sm ghost mb-8 no-print" data-act="nav" data-page="riwayat"><i class="bi bi-arrow-left"></i> Daftar murid</button>' +
       '<div class="card pad rw-head"><div class="row between wrap" style="gap:16px"><div class="profile-head"><div class="big-av">' + esc(initials(m.nama)) + '</div><div><h2>' + esc(m.nama) + '</h2><div class="xs muted">NIS ' + esc(m.nis) + ' · ' + esc(m.kelas) + ' · Wali kelas: ' + esc(m.wali || '-') + (m.guruWali ? ' · Guru wali: ' + esc(m.guruWali) : '') + (d.kolaborasi.guruBk ? ' · Guru BK: ' + esc(d.kolaborasi.guruBk) : '') + (m.status !== 'Aktif' ? ' · <b>' + esc(m.status) + '</b>' : '') + '</div>' +
@@ -3840,7 +3869,7 @@ ACT['in-csv'] = function () {
 // ════════════════════════════════════════════════════════════
 // Administrasi (F12): data master CRUD, impor, pengaturan, log
 // ════════════════════════════════════════════════════════════
-const ADM_TABS = [['users', 'Pengguna', 'bi-people'], ['murid', 'Murid', 'bi-mortarboard'], ['kelas', 'Kelas', 'bi-grid-3x3-gap'], ['mapel', 'Mata Pelajaran', 'bi-journal-bookmark'], ['pengampu', 'Pengampu', 'bi-diagram-3'], ['kategori', 'Kategori', 'bi-tags'], ['penugasan', 'Penugasan BK', 'bi-person-gear'], ['guruwali', 'Guru Wali', 'bi-person-heart'], ['tahun', 'Tahun Ajaran', 'bi-calendar-event'], ['kehadiran', 'Kehadiran & Libur', 'bi-qr-code-scan'], ['surat', 'Surat & Cetak', 'bi-file-earmark-text'], ['poin', 'Sistem Poin', 'bi-award'], ['config', 'Pengaturan', 'bi-sliders'], ['log', 'Log akses', 'bi-clock-history']];
+const ADM_TABS = [['users', 'Pengguna', 'bi-people'], ['murid', 'Murid', 'bi-mortarboard'], ['kelas', 'Kelas', 'bi-grid-3x3-gap'], ['mapel', 'Mata Pelajaran', 'bi-journal-bookmark'], ['pengampu', 'Pengampu', 'bi-diagram-3'], ['kategori', 'Kategori', 'bi-tags'], ['penugasan', 'Penugasan BK', 'bi-person-gear'], ['guruwali', 'Guru Wali', 'bi-person-heart'], ['tahun', 'Tahun Ajaran', 'bi-calendar-event'], ['kehadiran', 'Kehadiran & Libur', 'bi-qr-code-scan'], ['surat', 'Surat & Cetak', 'bi-file-earmark-text'], ['poin', 'Sistem Poin', 'bi-award'], ['jadwal', 'Jadwal Pelajaran', 'bi-calendar3'], ['config', 'Pengaturan', 'bi-sliders'], ['sistem', 'Kesehatan Sistem', 'bi-shield-check'], ['log', 'Log akses', 'bi-clock-history']];
 
 PAGES.admin = function (params, tok) {
   return apiC('admin.meta').then(function (meta) {
@@ -3866,6 +3895,8 @@ function adDraw() {
   if (t === 'poin') return adPoin();
   if (t === 'guruwali') return adGuruWali();
   if (t === 'log') return adLog();
+  if (t === 'sistem') return adSistem();
+  if (t === 'jadwal') return adJadwal();
   const e = P.ad.meta.entities[t];
   const statusF = (t === 'users' || t === 'murid');
   $('#ad-body').innerHTML = '<div class="card"><div class="card-head" style="flex-wrap:wrap"><div class="row wrap grow"><div class="search" style="max-width:280px"><i class="bi bi-search"></i><input id="ad-q" type="search" placeholder="Cari ' + esc(e.singular) + '…" value="' + esc(P.ad.q) + '"></div>' +
@@ -4212,8 +4243,14 @@ const GUIDE = {
     tugas: ['Mencatat absensi setiap sesi mengajar pada kelas yang Anda ampu.', 'Melaporkan kejadian dengan kronologi yang objektif.', 'Melakukan pembinaan awal untuk laporan Anda sendiri.', 'Merujuk ke Guru BK bila pembinaan belum cukup.'],
     langkah: [
       { t: 'Mencatat absensi mata pelajaran', s: ['Buka Absensi, tab Per mata pelajaran (atau ketuk kartu kelas di Beranda).', 'Pilih kelas & mata pelajaran, lalu tanggal.', 'Atur jam pelajaran: pilih Jam mulai, lalu Jumlah JP. Contoh mengajar 3 JP mulai jam ke-3: pilih Jam ke-3 dan 3 JP, hasilnya jam ke-3 s.d. 5.', 'Ketuk Muat daftar murid. Semua murid otomatis Hadir. Murid yang sudah tercatat Sakit, Izin, atau Alpa di absensi harian ikut ditandai.', 'Ubah hanya murid yang berbeda (S, I, A, T), isi catatan bila perlu, lalu Simpan absensi.'] },
+      { t: 'Jadwal hari ini', s: ['Bila admin sudah mengisi jadwal pelajaran, Beranda menampilkan kartu "Jadwal Anda hari ini" lengkap dengan jamnya.', 'Ketuk kartu: kelas, mata pelajaran, dan jam langsung terisi; tinggal tandai murid yang tidak hadir lalu Simpan.', 'Sesi terjadwal yang belum diabsen muncul di lonceng (hari sebelumnya, dan hari ini setelah pukul 12.00).'] },
+      { t: 'Peringatan saat menyimpan absensi', s: ['Bila murid tercatat Sakit, Izin, atau Alpa di absensi harian tetapi Anda tandai Hadir, aplikasi bertanya dulu sebelum menyimpan.', 'Periksa kembali; bila memang benar (mis. murid datang menyusul), ketuk Ya, simpan.', 'Data yang konsisten membuat deteksi bolos lebih bisa dipercaya.'] },
+      { t: 'Rekap absensi mapel bulanan', s: ['Buka Absensi, tab Rekap mapel bulanan.', 'Pilih bentuk Per mata pelajaran (daftar hadir murid × pertemuan), lalu Mapel & kelas dan bulan.', 'Ketuk Siapkan cetak untuk mencetak atau menyimpan PDF.'] },
       { t: 'Salah memasukkan jam pelajaran', s: ['Buka sesi tersebut (dari Riwayat absensi mapel, tombol Buka).', 'Ketuk Ubah jam, pilih jam mulai dan jumlah JP yang benar, lalu Simpan jam.', 'Perubahan hanya dapat dilakukan pencatat awal dan dalam batas waktu koreksi (bawaan 24 jam).'] },
       { t: 'Melaporkan kejadian', s: ['Ketuk tombol + atau Lapor Kejadian, lalu cari murid.', 'Pilih contoh kejadian yang sering terjadi (mis. terlambat, tidak mengerjakan tugas) agar kategori dan kronologi terisi otomatis, lalu sesuaikan.', 'Pilih cara penanganan. "Sudah saya bina" cocok untuk keterlambatan atau tugas: tulis pembinaan yang sudah Anda lakukan; BK menerimanya sebagai informasi.', 'Pilih "Perlu tindak lanjut BK" atau "Mohon ditangani Guru BK" bila masalah berulang atau di luar kewenangan Anda; rujukan dibuat otomatis.', 'Anda menerima pemberitahuan setelah Guru BK meninjau laporan.'] },
+      { t: 'Draf laporan & dikte', s: ['Isian laporan tersimpan otomatis di perangkat Anda. Bila halaman tertutup atau sinyal putus, draf dipulihkan saat membuka Lapor Kejadian lagi (berlaku 24 jam).', 'Cara penanganan yang terakhir Anda pilih menjadi pilihan awal berikutnya.', 'Di HP, ketuk ikon mikrofon pada keyboard untuk mendikte kronologi.'] },
+      { t: 'Poin murid (bila diaktifkan sekolah)', s: ['Buka Poin Murid, tab Catat: pilih murid dan butir pelanggaran atau prestasi sesuai tata tertib, isi uraian singkat, lalu Simpan.', 'Bila murid yang sama sudah dicatat untuk butir yang sama pada hari itu, aplikasi menanyakan dulu agar tidak dobel.', 'Catatan berstatus Menunggu sampai diverifikasi Guru BK; hasilnya terlihat di tab Catatan saya.'] },
+      { t: 'Guru wali (bila ditetapkan admin)', s: ['Bila Anda ditetapkan sebagai guru wali, muncul menu Murid Dampingan.', 'Tab Murid: daftar murid dampingan beserta kondisi singkatnya. Ketuk Catat pendampingan untuk satu murid atau beberapa murid sekaligus.', 'Tab Rencana: isi rencana pendampingan tahun ini; cetak rencana dan laporan tahunan sebagai bukti dukung.'] },
       { t: 'Pembinaan awal dan rujukan', s: ['Buka menu Laporan Saya, pilih kasusnya.', 'Tambahkan pembinaan awal: tindakan yang Anda lakukan dan hasilnya.', 'Bila masalah berulang, ketuk Rujuk ke Guru BK dan tuliskan alasannya. Ringkasan pembinaan ikut terlampir otomatis.', 'Pantau status rujukan Anda. Isi konseling tetap rahasia.'] }
     ],
     tips: ['Sistem menolak sesi yang jamnya bertabrakan dengan sesi lain di kelas yang sama. Periksa jadwal bila muncul peringatan itu.', 'Baris murid berwarna merah berarti ia hadir di jam sebelumnya tetapi Anda tandai Alpa. Periksa kembali, bisa jadi indikasi bolos di tengah hari.']
@@ -4233,6 +4270,10 @@ const GUIDE = {
       { t: 'Kasus yang dilimpahkan Guru BK', s: ['Lonceng menampilkan "Kasus dilimpahkan Guru BK kepada Anda". Ketuk untuk membuka kasus; arahan BK dan tanggal tinjau tampil di bagian atas.', 'Lakukan arahan BK, lalu ketuk Catat tindakan wali kelas: tulis tindakan dan hasilnya.', 'Pilih langkah berikutnya: Masih berjalan (catat saja), Selesai, laporkan ke BK (BK yang menutup kasus), atau Kembalikan ke BK (tulis alasannya).', 'Filter "Dilimpahkan ke saya" di Kasus Kelas Saya menampilkan semua kasus yang sedang Anda tangani.'] },
       { t: 'Lonceng pemberitahuan', s: ['Laporan MENDESAK dan laporan yang dirujuk ke BK tentang murid kelas Anda tampil satu per satu; laporan lain digabung menjadi ringkasan 7 hari.', 'Keputusan Guru BK atas laporan murid kelas Anda juga tampil di lonceng. Pemberitahuan ini hanya di aplikasi (tanpa email).', 'Tandai sudah dibaca menghapus angka pada lonceng. Tugas (kasus dilimpahkan, tinjauan jatuh tempo, absensi belum dicatat) tetap dihitung sampai dikerjakan.'] },
       { t: 'Profil kelas dari instrumen BK', s: ['Di bagian bawah Kelas Saya tampil profil kelas: persentase per aspek, gaya belajar dominan, rencana sekolah lanjutan, dan saran pembelajaran.', 'Tidak ada nama murid atau jawaban perorangan. Profil tampil bila minimal 5 murid kelas Anda sudah mengisi; sosiometri tidak dibagikan.', 'Tekan Cetak untuk rekap profil kelas bertanda tangan wali kelas.'] },
+      { t: 'Mengonfirmasi pola bolos', s: ['Deteksi Dini di Beranda adalah tanda "perlu dicek", bukan vonis. Buka garis waktu murid untuk memeriksa.', 'Ketuk Benar bolos bila memang bolos, atau Salah catat bila absensinya keliru; pola itu disembunyikan sampai ada catatan alpa baru.', 'Pola terkuat: alpa di tengah hari padahal hadir di jam sebelum dan sesudahnya.'] },
+      { t: 'Rapat kelas & pertemuan orang tua', s: ['Garis Waktu Murid → Cetak: pilih Internal (rapat guru) atau Untuk orang tua (tanpa nama guru dan catatan internal), lalu periodenya.', 'Menu Rekap Rapat Kelas: satu tabel berisi kehadiran, alpa, kasus, poin, dan layanan BK setiap murid; murid yang perlu perhatian ditandai dan sudah dicentang.', 'Cetak rekap untuk dibagikan di rapat, atau Cetak garis waktu terpilih untuk satu lembar per murid.'] },
+      { t: 'Rekap absensi mapel bulanan kelas', s: ['Buka Absensi, tab Rekap mapel bulanan, pilih bentuk Per kelas.', 'Lembar cetak berisi matriks tanggal × jam pelajaran dan daftar murid yang tidak hadir di setiap jam.', 'Gunakan untuk melihat jam pelajaran yang sering ditinggalkan murid.'] },
+      { t: 'Poin murid kelas Anda (bila diaktifkan)', s: ['Kelas Saya menampilkan kolom Poin dan tahapan setiap murid.', 'Buka Poin Murid untuk melihat rincian catatan yang sudah disahkan Guru BK.', 'Saat murid mencapai ambang tertentu, Anda mendapat pemberitahuan dan dapat mengirim pesan templat ke orang tua.'] },
       { t: 'Memantau kelas', s: ['Beranda menampilkan deteksi dini pola kehadiran murid kelas Anda.', 'Garis Waktu Murid merangkum absensi, kejadian, pembinaan, rujukan, dan komunikasi orang tua.', 'Kasus Kelas Saya berisi semua kasus murid perwalian Anda.'] }
     ],
     tips: ['Catat absensi harian di jam pertama agar guru mapel langsung mendapat data awal yang benar.', 'Koreksi absensi harian dapat dilakukan dalam batas waktu koreksi yang ditetapkan admin.']
@@ -4244,7 +4285,11 @@ const GUIDE = {
     langkah: [
       { t: 'Rutinitas harian', s: ['Buka Beranda: periksa KPI Rujukan Baru, Pola Bolos, dan Deteksi Dini.', 'Lonceng menampilkan laporan baru, rujukan menunggu, dan tinjauan jatuh tempo.', 'Kartu Absensi Harian menunjukkan kelas yang belum dicatat wali kelasnya. Anda dapat mencatatnya bila bertugas piket.'] },
       { t: 'Menangani rujukan dan kasus', s: ['Buka Rujukan & Kasus, pilih kasus.', 'Tanggapi rujukan. Menunda atau menolak wajib disertai alasan yang akan dibaca pengirim.', 'Ubah status sesuai perkembangan. Ambil alih atau alihkan kasus ke Guru BK lain bila perlu.', 'Tambahkan tindak lanjut dengan penanggung jawab dan tanggal tinjau. Pengingat dikirim saat jatuh tempo.', 'Eskalasikan ke Waka Kesiswaan bila butuh kewenangan kesiswaan.'] },
+      { t: 'Memulai hari kerja', s: ['Buka Beranda: kartu Tugas hari ini merangkum laporan yang belum ditinjau, rujukan baru, tindak lanjut jatuh tempo, dan permintaan murid.', 'Kartu Kemajuan program BK menunjukkan langkah semester yang sudah dan belum selesai; ketuk untuk membuka menunya.', 'Peta kerja BK menunjukkan urutan siklus program dan alur kasus; setiap kotak dapat diketuk.'] },
+      { t: 'Mengonfirmasi pola bolos', s: ['Deteksi Dini adalah "perlu dicek", bukan vonis. Periksa garis waktu murid.', 'Ketuk Benar bolos bila memang bolos, atau Salah catat bila data absensinya keliru (pola disembunyikan sampai ada bukti baru).', 'Tanda Diisi terlambat atau Data kelas x% lengkap berarti keyakinan data lebih rendah.'] },
+      { t: 'Rapat & pertemuan orang tua', s: ['Garis Waktu Murid → Cetak: pilih versi Internal (rapat guru/BK) atau Untuk orang tua (tanpa nama guru dan catatan internal), lalu tentukan periodenya.', 'Rekap Rapat Kelas: satu tabel per kelas untuk rapat semester; murid yang perlu perhatian sudah dicentang.', 'Cetak garis waktu terpilih mencetak satu lembar per murid sekaligus. Isi konseling tidak pernah dicetak.'] },
       { t: 'Mencatat layanan BK', s: ['Buka Layanan BK, ketuk Catat layanan.', 'Pilih komponen: Layanan Dasar (klasikal/kelompok/informasi), Peminatan & Perencanaan Individual, Responsif (konseling, rahasia), atau Dukungan Sistem.', 'Pilih sasaran: satu murid, sekelompok murid, atau satu kelas (seluruh murid aktif tercatat sebagai peserta).', 'Kaitkan ke kegiatan Program BK agar realisasi bertambah otomatis, dan ke kasus bila layanan menindaklanjuti laporan.', 'Topik layanan non-responsif tampil di garis waktu murid bagi wali kelas; isi catatan hanya untuk Guru BK.'] },
+      { t: 'Memverifikasi poin murid (bila diaktifkan)', s: ['Buka Poin Murid, tab Verifikasi: catatan dari guru menunggu pengesahan Anda.', 'Catatan kembar (murid dan butir sama pada hari yang sama) ditandai; sahkan yang pertama, tolak sisanya.', 'Anda dapat mengganti butir aturan bila guru salah memilih, lalu Sahkan atau Tolak dengan alasan.'] },
       { t: 'Meninjau laporan guru', s: ['Filter "Perlu ditinjau" di Rujukan & Kasus menampilkan laporan yang belum Anda baca, termasuk yang sudah dibina guru.', 'Buka laporan, ketuk Tinjau laporan, pilih keputusan (ketahui, pantau, tangani, atau tutup), dan tulis pesan singkat untuk pelapor.'] },
       { t: 'Melimpahkan kasus ke wali kelas', s: ['Cocok untuk masalah ringan yang paling tepat ditangani wali kelas (keterlambatan, tugas, kedisiplinan kelas).', 'Buka kasus, ketuk Limpahkan ke wali kelas, tulis arahan, dan tentukan tanggal tinjau. Wali kelas diberi tahu lewat lonceng.', 'Kasus tetap tercatat atas nama Anda. Wali kelas mencatat tindakannya; Anda dan wali kelas diingatkan pada tanggal tinjau.', 'Bila wali kelas melaporkan selesai, lonceng Anda menampilkan "Wali kelas melaporkan kasus selesai". Ketuk Konfirmasi hasil wali kelas: tutup kasus, pantau dulu, kembalikan ke wali kelas dengan arahan baru, atau ambil alih.', 'Bila wali kelas mengembalikan kasus, status menjadi Diproses dan alasannya tampil di tindak lanjut.'] },
       { t: 'Permintaan dari murid', s: ['Buka Layanan BK → Formulir, lalu Buka formulir. Bagikan tautan, kode, atau cetak posternya untuk ditempel di kelas.', 'Murid mengisi tanpa akun (kode + NIS): topik, cerita singkat, waktu luang, dan tanda mendesak. Permintaan masuk ke lonceng Anda.', 'Di Layanan BK → Buka: jadwalkan pertemuan, lalu Catat layanan. Permintaan otomatis berstatus Selesai dan terhubung ke catatan layanan.', 'Email pemberitahuan tidak memuat nama murid maupun isi cerita. Ganti kode formulir bila ada penyalahgunaan.'] },
@@ -4261,6 +4306,7 @@ const GUIDE = {
     tugas: ['Meninjau kasus eskalasi dan menindaklanjutinya.', 'Mengisi dan memperbarui tindak lanjut bagian Anda sampai tanggal tinjau.', 'Memantau absensi seluruh kelas dan mencatat absensi harian saat piket atau wali kelas berhalangan.'],
     langkah: [
       { t: 'Menindaklanjuti eskalasi', s: ['Buka Kasus Eskalasi, pilih kasus.', 'Baca kronologi, pembinaan, dan rujukan. Isi konseling tidak ditampilkan.', 'Tambahkan atau perbarui tindak lanjut beserta hasil evaluasi dan tanggal tinjau berikutnya.'] },
+      { t: 'Rekap rapat kelas', s: ['Buka Rekap Rapat Kelas, pilih kelas dan periode untuk melihat kehadiran, kasus, poin, dan layanan BK setiap murid.', 'Murid yang perlu perhatian ditandai; dari sana garis waktu beberapa murid dapat dicetak sekaligus.'] },
       { t: 'Piket absensi harian', s: ['Buka Absensi, tab Harian. Semua kelas dapat Anda catat.', 'Kelas yang belum dicatat ditandai Belum.'] },
       { t: 'Pindai kartu QR & daftar hadir', s: ['Buka Pindai Hadir. Gunakan pemindai USB/Bluetooth (paling cepat) atau kamera HP.', 'Nama murid langsung tampil; hijau = hadir, kuning = terlambat, abu-abu = sudah tercatat, merah = kartu tidak dikenal.', 'Bila sinyal putus, pindaian disimpan di perangkat dan dikirim otomatis saat tersambung kembali.', 'Absensi → Daftar hadir: pantau semua kelas, saring yang tidak hadir/terlambat atau belum tercatat, lalu Cetak untuk arsip atau tindak lanjut.'] }
     ],
@@ -4272,6 +4318,7 @@ const GUIDE = {
     tugas: ['Memantau tingkat kehadiran harian dan per mapel.', 'Memantau jumlah, kategori, dan penyelesaian kasus.', 'Meninjau program layanan BK dan hasil instrumen secara agregat.'],
     langkah: [
       { t: 'Membaca beranda', s: ['KPI menampilkan kehadiran harian 30 hari, kasus baru bulan ini, kasus aktif, persentase penyelesaian, dan jumlah murid terpantau.', 'Insight otomatis merangkum kecenderungan (agregat, bukan diagnosis).'] },
+      { t: 'Rekap rapat kelas', s: ['Buka Rekap Rapat Kelas, pilih kelas dan periode.', 'Murid yang perlu perhatian ditandai; layanan BK hanya dihitung jumlahnya tanpa isi konseling.', 'Cetak rekap sebagai bahan rapat kenaikan kelas atau pembahasan kasus.'] },
       { t: 'Laporan resmi', s: ['Buka Laporan & Rekap, atur periode dan kelas.', 'Unduh PDF untuk rapat atau pelaporan, atau ekspor CSV.', 'Program & Rekap BK berisi laporan program layanan BK tahunan.'] }
     ],
     tips: ['Untuk keperluan dinas, unduh laporan PDF yang sudah berkop sekolah.']
@@ -4283,6 +4330,10 @@ const GUIDE = {
     langkah: [
       { t: 'Urutan pengisian data awal', s: ['Kelas: nama kelas, wali kelas, Guru BK pemegang kelas (opsional).', 'Pengguna: email Google, nama, peran (boleh lebih dari satu). PIN awal tampil sekali, sampaikan ke guru.', 'Murid: tambah satu per satu atau impor CSV (nis, nama, kelas, jk, nama_ortu, no_wa_ortu, email_ortu).', 'Mata pelajaran, lalu Pengampu. Gunakan penugasan massal untuk satu guru di banyak kelas.'] },
       { t: 'Pengaturan penting', s: ['Jumlah jam pelajaran per hari (bawaan 10). Menentukan pilihan jam mulai dan JP pada absensi.', 'Batas koreksi absensi (jam) dan ambang deteksi pola.', 'Kop surat, kepala sekolah, dan templat WhatsApp.'] },
+      { t: 'Sistem poin (opsional)', s: ['Administrasi → Sistem Poin: aktifkan bila sekolah memakai poin tata tertib. Bila nonaktif, menu Poin tersembunyi dan data tetap tersimpan.', 'Sesuaikan butir pelanggaran/prestasi, ambang tahapan, dan aturan pemutihan (per semester, per tahun, atau tidak).', 'Guru mencatat, Guru BK memverifikasi; orang tua dihubungi saat murid mencapai ambang.'] },
+      { t: 'Guru wali', s: ['Administrasi → Guru Wali: pilih guru, pilih kelas, centang murid, lalu Tetapkan.', 'Guru tersebut otomatis mendapat menu Murid Dampingan dan dapat melihat garis waktu murid dampingannya.', 'Guru wali dapat diganti atau dilepas kapan saja; catatan pendampingan tetap tersimpan.'] },
+      { t: 'Jadwal pelajaran (opsional)', s: ['Administrasi → Jadwal Pelajaran: pilih kelas, lalu isi mapel dan guru pada setiap hari dan jam. Pilihan diambil dari data Pengampu.', 'Jam berurutan dengan mapel dan guru yang sama dihitung satu sesi.', 'Bila diisi: Beranda guru menampilkan jadwal hari itu, guru diingatkan sesi yang belum diabsen, admin melihat x dari y sesi, dan kelengkapan absensi per kelas terhitung. Bila kosong, aplikasi bekerja seperti biasa.'] },
+      { t: 'Kesehatan sistem', s: ['Administrasi → Kesehatan Sistem: cek versi server dan tampilan harus sama setelah pembaruan.', 'Aktifkan Pemanas otomatis agar guru tidak menunggu lama saat membuka aplikasi pagi hari.', 'Aktifkan Perlindungan lembar agar perubahan langsung di spreadsheet memunculkan peringatan.', 'Pantau galat server terbaru dan status penyimpanan absensi mapel (format hemat).'] },
       { t: 'Kehadiran & Libur', s: ['Administrasi → Kehadiran & Libur: aktifkan absensi QR, atur batas jam masuk, dan pilih guru piket sebagai petugas pindai.', 'Cetak kartu QR per kelas (A4, 10 kartu ukuran KTP). Isi QR berupa kode acak, bukan NIS.', 'Masukkan hari libur nasional, cuti bersama, libur semester, dan kegiatan sekolah. Tanggal ini dilewati deteksi pola, pengingat, dan pemindaian.', 'Pantau kapasitas data. Bila mendekati 70%, rapikan kolom kosong atau arsipkan semester.'] },
       { t: 'Surat & Cetak', s: ['Administrasi → Surat & Cetak: isi baris kop, unggah logo kiri (pemda) dan kanan (sekolah).', 'Isi nama, NIP, sebutan jabatan, dan pangkat Kepala Sekolah. NIP guru diambil dari data Pengguna.', 'Atur format nomor surat (mis. 421.3/{no}/SMPN3-BTP/{bulan}/{tahun}) dan nomor terakhir yang sudah terpakai. Nomor mulai lagi dari 001 setiap tahun.', 'Pilih ukuran kertas (A4/F4) dan jenis huruf, simpan, lalu tekan Lihat contoh surat.', 'Kalimat surat: pilih jenis surat, ubah kalimat pembuka/isi/penutup sesuai gaya sekolah (ketuk isian seperti {nama_murid} untuk menyisipkan), lalu Simpan kalimat.'] },
       { t: 'Akhir tahun ajaran', s: ['Administrasi, Tahun Ajaran: arsipkan data (salinan lengkap tersimpan di Drive).', 'Jalankan kenaikan kelas dengan pratinjau.', 'Atur tahun ajaran dan semester baru.'] }
@@ -4326,12 +4377,317 @@ function gdDraw(k) {
     return;
   }
   const g = GUIDE[k];
-  b.innerHTML = '<div class="grid g-2"><div class="col gap-16"><div class="card pad gd"><div class="row"><span class="step-n"><i class="bi ' + g.ikon + '"></i></span><div><h3>' + esc(g.judul) + '</h3></div></div><p class="muted-2 mt-12">' + esc(g.intro) + '</p>' +
+  b.innerHTML = (k === 'guru_bk' ? petaBK() + '<div class="mt-16"></div>' : '') + '<div class="grid g-2"><div class="col gap-16"><div class="card pad gd"><div class="row"><span class="step-n"><i class="bi ' + g.ikon + '"></i></span><div><h3>' + esc(g.judul) + '</h3></div></div><p class="muted-2 mt-12">' + esc(g.intro) + '</p>' +
     '<h4 class="mt-16">Tugas utama</h4><ul class="gd-list">' + g.tugas.map(function (x) { return '<li><i class="bi bi-check2-circle"></i><span>' + esc(x) + '</span></li>'; }).join('') + '</ul></div>' +
     (g.tips && g.tips.length ? '<div class="insight"><span class="ai-tag"><i class="bi bi-lightbulb"></i> Tips</span><ul>' + g.tips.map(function (x) { return '<li><i class="bi bi-lightbulb"></i><span>' + esc(x) + '</span></li>'; }).join('') + '</ul></div>' : '') + '</div>' +
     '<div class="col gap-16">' + g.langkah.map(function (l) { return '<div class="card pad gd"><h4>' + esc(l.t) + '</h4><ol class="gd-steps">' + l.s.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol></div>'; }).join('') + '</div></div>';
 }
 ACT['gd-tab'] = function (el) { $$('#gd-tabs .tab').forEach(function (b) { b.classList.toggle('active', b === el); }); gdDraw(el.dataset.t); };
+
+// ════════════════════════════════════════════════════════════
+// v1.12 — Kesehatan sistem, jadwal pelajaran, konfirmasi pola, rekap rapat, cetak garis waktu, pemandu BK
+// ════════════════════════════════════════════════════════════
+function akunAdmin() { const r = (S.user && (S.user.allRoles || S.user.roles)) || []; return r.indexOf('admin') >= 0; }
+/** Peringatan bila tampilan dan server berbeda versi (mis. Kode.gs lupa diganti). Hanya untuk admin. */
+function bannerVersi() {
+  if (!akunAdmin() || !S.user || S.versiServer === VERSI_APP) return '';
+  return '<div class="note rose mb-16"><i class="bi bi-exclamation-triangle"></i><div><b>Versi server dan tampilan berbeda.</b> Tampilan v' + esc(VERSI_APP) + ', server ' + (S.versiServer ? 'v' + esc(S.versiServer) : 'versi lama') +
+    '. Ganti Kode.gs, JavaScript.html, dan Stylesheet.html di Apps Script, lalu Deploy → Manage deployments → New version. Untuk tampilan GitHub, ganti js/app.js dan css/style.css.</div></div>';
+}
+
+// ── Administrasi → Kesehatan Sistem ──
+function adSistem() {
+  $('#ad-body').innerHTML = skeleton(2);
+  api('sistem.info').then(function (r) { P.sis = r; adSistemGambar(); }).catch(function (e) { isiHtml('#ad-body', errBox(e)); });
+}
+function adSistemGambar() {
+  const r = P.sis, a = r.absen || {}, inf = a.info || {};
+  const sak = function (apa, on, label, ket) {
+    return '<div class="row between sec mb-8" style="gap:12px"><div class="grow"><div class="fw6">' + label + ' <span class="chip ' + (on ? 'st-Dipantau' : 'neutral') + '">' + (on ? 'Aktif' : 'Nonaktif') + '</span></div><div class="xs muted mt-8" style="margin-top:4px">' + ket + '</div></div>' +
+      '<button class="btn sm ' + (on ? '' : 'primary') + '" data-act="sis-atur" data-apa="' + apa + '" data-on="' + (on ? '0' : '1') + '">' + (on ? 'Matikan' : 'Aktifkan') + '</button></div>';
+  };
+  const fm = a.format === 'sesi';
+  const kl = r.kelengkapan;
+  let h = bannerVersi() + '<div class="grid g-2 eq">';
+  h += '<div class="card pad"><h3>Versi</h3><div class="stat-row s3 mt-12"><div class="stat"><span class="lbl">Tampilan</span><b>v' + esc(VERSI_APP) + '</b></div><div class="stat"><span class="lbl">Server</span><b>v' + esc(r.versiServer) + '</b></div><div class="stat"><span class="lbl">Skema data</span><b>' + esc(r.skema) + '</b></div></div>' +
+    (r.versiServer === VERSI_APP ? '<div class="xs muted mt-12"><i class="bi bi-check2-circle"></i> Versi server dan tampilan sama.</div>' : '') +
+    '<div class="xs muted mt-12">Lama setiap permintaan tercatat di editor Apps Script → <b>Eksekusi</b>, misalnya <span class="mono">⏱ dashboard.get 1.8 dtk · guru_bk</span>.</div></div>';
+  h += '<div class="card pad"><h3>Kecepatan & keamanan</h3><div class="mt-12">' +
+    sak('pemanas', r.pemanas, 'Pemanas otomatis', 'Setiap 10 menit pada hari sekolah pukul 06.15–15.15, server dibangunkan dan cache diisi agar guru tidak menunggu lama. Memakai sekitar 5 menit per hari dari kuota pemicu.') +
+    sak('lindungi', r.lindungi, 'Perlindungan lembar spreadsheet', 'Siapa pun yang mengubah data langsung di Google Sheets mendapat peringatan lebih dulu. Ubah data lewat aplikasi agar tetap valid dan tidak membuat angka kedaluwarsa.') + '</div></div>';
+  h += '<div class="card pad"><h3>Penyimpanan absensi mapel</h3><div class="sec mt-12"><div class="fw6"><i class="bi ' + (fm ? 'bi-check2-circle' : 'bi-info-circle') + '"></i> ' +
+    (fm ? 'Format hemat aktif' : a.status === 'tunda' ? 'Format hemat menunggu arsip semester' : a.status === 'gagal' ? 'Konversi belum berhasil — format lama tetap dipakai' : 'Format lama') + '</div>' +
+    '<div class="xs muted mt-8">' + esc(inf.pesan || (fm ? 'Satu baris per sesi; baris per murid hanya untuk yang tidak hadir.' : '')) + '</div>' +
+    (inf.selesai ? '<div class="xs muted mt-8">' + esc(fTgl(String(inf.selesai).substr(0, 10))) + ' ' + esc(String(inf.selesai).substr(11, 5)) + (inf.cadangan ? ' · cadangan dibuat di Drive → Cadangan' : '') + '</div>' : '') + '</div>' +
+    (a.status === 'gagal' ? '<button class="btn primary mt-12" data-act="sis-atur" data-apa="konversi"><i class="bi bi-arrow-repeat"></i> Coba konversi lagi</button>' : '') +
+    (fm && a.lembarLama && a.lembarLama.length ? '<div class="row between sec mt-12" style="gap:12px"><div class="xs">Lembar lama masih disimpan: <b>' + esc(a.lembarLama.join(', ')) + '</b>. Hapus setelah Anda yakin rekap benar (cadangan tetap ada di Drive), atau biarkan; lembar ini ikut dibuang saat arsip semester.</div><button class="btn sm danger" data-act="sis-hapuslama">Hapus</button></div>' : '') + '</div>';
+  h += '<div class="card pad"><h3>Kelengkapan absensi mapel</h3>' + (kl ? '<div class="xs muted mt-8">' + kl.hari + ' hari sekolah terakhir: ' + kl.terisi + ' dari ' + kl.terjadwal + ' sesi terjadwal sudah diabsen (' + kl.persen + '%). Kelas di bawah 70% ditandai pada deteksi pola.</div>' +
+    '<div class="tbl-wrap mt-12"><table class="tbl" style="min-width:0"><thead><tr><th>Kelas</th><th>Terisi</th><th>Kelengkapan</th></tr></thead><tbody>' + kl.kelas.map(function (k) {
+      return '<tr><td class="fw6">' + esc(k.kelas) + '</td><td>' + k.terisi + ' / ' + k.terjadwal + '</td><td><div class="bar' + (k.persen < 70 ? ' bar-warn' : '') + '" style="min-width:90px"><i style="width:' + k.persen + '%"></i></div><span class="xs">' + k.persen + '%</span></td></tr>';
+    }).join('') + '</tbody></table></div>' : '<div class="xs muted mt-8">Isi <a href="#" data-act="ad-tab" data-t="jadwal">Jadwal Pelajaran</a> agar kelengkapan absensi per kelas dapat dihitung.</div>') + '</div>';
+  h += '<div class="card pad" style="grid-column:1/-1"><div class="row between"><h3>Galat server terbaru</h3>' + (r.galat.length ? '<button class="btn sm ghost" data-act="sis-atur" data-apa="galat">Bersihkan</button>' : '') + '</div>' +
+    (r.galat.length ? '<div class="tbl-wrap mt-12"><table class="tbl" style="min-width:0"><thead><tr><th>Waktu</th><th>Aksi</th><th>Pengguna</th><th>Pesan</th></tr></thead><tbody>' + r.galat.map(function (g) {
+      return '<tr><td class="xs">' + esc(String(g.t).replace('T', ' ').substr(0, 16)) + '</td><td class="mono xs">' + esc(g.a) + '</td><td class="xs">' + esc(g.e || '-') + '</td><td class="xs">' + esc(g.m) + '</td></tr>';
+    }).join('') + '</tbody></table></div>' : '<div class="xs muted mt-8"><i class="bi bi-check2-circle"></i> Tidak ada galat tercatat.</div>') + '</div></div>';
+  $('#ad-body').innerHTML = h;
+}
+ACT['sis-atur'] = function (el) {
+  run(el, api('sistem.atur', { apa: el.dataset.apa, aktif: el.dataset.on === '1' })).then(function (r) { P.sis = r; adSistemGambar(); toast('Tersimpan.'); }).catch(fail);
+};
+ACT['sis-hapuslama'] = function (el) {
+  confirmDlg('Hapus lembar absensi format lama dari spreadsheet? Salinan lengkapnya tetap ada di folder Drive "Cadangan".', 'Ya, hapus', true, 'Hapus lembar lama').then(function (ok) {
+    if (ok) run(el, api('sistem.atur', { apa: 'hapusLama' })).then(function (r) { P.sis = r; adSistemGambar(); toast('Lembar lama dihapus.'); }).catch(fail);
+  });
+};
+
+// ── Administrasi → Jadwal Pelajaran ──
+const HARI_ID = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+function adJadwal(idKelas) {
+  $('#ad-body').innerHTML = skeleton(2);
+  api('jadwal.get', { id_kelas: idKelas || (P.jdw ? P.jdw.idKelas : '') }).then(function (r) { P.jdw = r; adJadwalGambar(); }).catch(function (e) { isiHtml('#ad-body', errBox(e)); });
+}
+function adJadwalGambar() {
+  const r = P.jdw, isi = {};
+  r.isi.forEach(function (x) { isi[x.hari + '|' + x.jam] = x.v; });
+  const hari = []; for (let i = 1; i <= r.hariSekolah; i++) hari.push(i);
+  const jam = []; for (let j = 1; j <= r.jamMaks; j++) jam.push(j);
+  const opsi = function (v) { return '<option value="">—</option>' + r.opsi.map(function (o) { return '<option value="' + esc(o.v) + '"' + (o.v === v ? ' selected' : '') + '>' + esc(o.l) + '</option>'; }).join(''); };
+  let h = '<div class="card pad"><div class="row between wrap" style="gap:12px"><div><h3>Jadwal pelajaran</h3><div class="xs muted mt-8" style="margin-top:4px">Opsional. Bila diisi, Beranda guru menampilkan kelas sesuai jadwal hari itu (beserta jamnya), guru diingatkan sesi yang belum diabsen, dan admin melihat "x dari y sesi". Bila dibiarkan kosong, aplikasi bekerja seperti biasa.</div></div>' +
+    '<select class="select" id="jd-kelas" style="width:auto;min-height:40px">' + r.kelas.map(function (k) { return '<option value="' + esc(k.id) + '"' + (k.id === r.idKelas ? ' selected' : '') + '>' + esc(k.nama) + (r.terisiKelas[k.id] ? ' ✓' : '') + '</option>'; }).join('') + '</select></div>';
+  if (!r.opsi.length) h += '<div class="note info mt-12"><i class="bi bi-info-circle"></i><div>Kelas ini belum punya pengampu. Atur dulu di tab <a href="#" data-act="ad-tab" data-t="pengampu">Pengampu</a>.</div></div>';
+  h += '<div class="tbl-wrap mt-12"><table class="tbl jdw-tbl"><thead><tr><th style="width:56px">Jam</th>' + hari.map(function (d) { return '<th>' + HARI_ID[d] + '</th>'; }).join('') + '</tr></thead><tbody>' +
+    jam.map(function (j) { return '<tr><td class="fw6">' + j + '</td>' + hari.map(function (d) { return '<td><select class="select jd-sel" data-h="' + d + '" data-j="' + j + '">' + opsi(isi[d + '|' + j] || '') + '</select></td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>' +
+    '<div class="row between wrap mt-12" style="gap:8px"><span class="xs muted">Jam berurutan dengan mapel dan guru yang sama dihitung satu sesi (mis. jam 1–2 IPS).</span><div class="row"><button class="btn" data-act="jd-kosong">Kosongkan</button><button class="btn primary" data-act="jd-simpan"><i class="bi bi-check2"></i> Simpan jadwal kelas ini</button></div></div></div>';
+  $('#ad-body').innerHTML = h;
+  $('#jd-kelas').addEventListener('change', function (e) { adJadwal(e.target.value); });
+}
+ACT['jd-kosong'] = function () { $$('.jd-sel').forEach(function (s) { s.value = ''; }); };
+ACT['jd-simpan'] = function (el) {
+  const isi = $$('.jd-sel').filter(function (s) { return s.value; }).map(function (s) { return { hari: +s.dataset.h, jam: +s.dataset.j, v: s.value }; });
+  run(el, api('jadwal.simpan', { id_kelas: P.jdw.idKelas, isi: isi })).then(function (r) { P.jdw = r; adJadwalGambar(); toast('Jadwal ' + (r.kelas.filter(function (k) { return k.id === r.idKelas; })[0] || {}).nama + ' tersimpan (' + isi.length + ' jam).'); }).catch(fail);
+};
+
+// ── Konfirmasi pola bolos (Beranda) ──
+function polaTanda(x) {
+  return (x.konfirmasi && x.konfirmasi.keputusan === 'benar' ? '<span class="chip st-Eskalasi" title="Dikonfirmasi ' + esc(x.konfirmasi.oleh) + '"><i class="bi bi-check2-circle"></i> Dikonfirmasi bolos</span>' : '') +
+    (x.kurangLengkap !== null && x.kurangLengkap !== undefined ? '<span class="chip neutral" title="Kelengkapan absensi mapel kelas ini ' + x.kurangLengkap + '%">Data kelas ' + x.kurangLengkap + '% lengkap</span>' : '') +
+    (x.isiTerlambat ? '<span class="chip neutral" title="Sebagian besar catatan alpa diisi setelah hari pelajaran">Diisi terlambat</span>' : '');
+}
+function polaTombol(x) {
+  if (!x.kunci || (x.konfirmasi && x.konfirmasi.keputusan === 'benar')) return '';
+  return '<button class="btn sm" data-act="pola-konf" data-id="' + esc(x.id_murid) + '" data-k="' + esc(x.kunci) + '" data-v="benar" title="Pola ini memang bolos"><i class="bi bi-check2-circle"></i> Benar bolos</button>' +
+    '<button class="btn sm ghost" data-act="pola-konf" data-id="' + esc(x.id_murid) + '" data-k="' + esc(x.kunci) + '" data-v="salah" title="Data absensi keliru; sembunyikan pola ini"><i class="bi bi-x-octagon"></i> Salah catat</button>';
+}
+ACT['pola-konf'] = function (el) {
+  const salah = el.dataset.v === 'salah';
+  const kirim = function () {
+    run(el, api('pola.konfirmasi', { id_murid: el.dataset.id, kunci: el.dataset.k, keputusan: el.dataset.v })).then(function () {
+      toast(salah ? 'Ditandai salah catat. Pola disembunyikan sampai ada bukti baru.' : 'Dikonfirmasi sebagai bolos.');
+      ccClear(); navigateTo('beranda', {}, true);
+    }).catch(fail);
+  };
+  if (salah) confirmDlg('Tandai pola ini sebagai salah catat? Pola disembunyikan sampai ada catatan alpa baru. Sebaiknya guru mapel juga memperbaiki absensinya.', 'Ya, salah catat', false, 'Salah catat').then(function (ok) { if (ok) kirim(); });
+  else kirim();
+};
+
+// ── Beranda Guru BK: tugas hari ini, kemajuan program, peta kerja ──
+function tugasBKHtml() {
+  const it = ((S.notif && S.notif.items) || []).filter(function (x) { return !x.ts || x.baru; }).slice(0, 8);
+  return '<div class="card"><div class="card-head"><div><h3><i class="bi bi-list-check" style="color:var(--indigo)"></i> Tugas hari ini</h3><div class="xs muted">Diurutkan dari yang perlu ditindaklanjuti</div></div></div><div class="card-body">' +
+    (it.length ? '<div class="col gap-8">' + it.map(function (x) {
+      const i = S.notif.items.indexOf(x);
+      return '<button class="sec row" style="text-align:left;cursor:pointer;gap:10px;width:100%" data-act="notif-go" data-i="' + i + '"><i class="bi bi-arrow-right-circle" style="color:var(--indigo)"></i><div class="grow"><div class="fw6">' + esc(x.judul) + '</div>' + (x.sub ? '<div class="xs muted">' + esc(x.sub) + '</div>' : '') + '</div></button>';
+    }).join('') + '</div>' : empty('bi-check2-circle', 'Tidak ada tugas mendesak', 'Laporan, rujukan, dan tindak lanjut sudah tertangani.')) + '</div></div>';
+}
+function ceklistBK() {
+  const box = $('#bk-ceklist');
+  if (!box) return;
+  apiC('bk.ceklist').then(function (r) {
+    if (!$('#bk-ceklist')) return;
+    box.innerHTML = '<div class="card-head"><div><h3><i class="bi bi-clipboard-check" style="color:var(--teal)"></i> Kemajuan program BK</h3><div class="xs muted">' + esc(r.semester) + ' ' + esc(r.tahunAjaran) + ' · ' + r.selesai + ' dari ' + r.total + ' langkah</div></div></div><div class="card-body"><div class="bar"><i style="width:' + Math.round(r.selesai * 100 / Math.max(1, r.total)) + '%"></i></div><div class="col gap-8 mt-12">' +
+      r.items.map(function (x) {
+        const ic = x.info ? 'bi-info-circle' : x.ok ? 'bi-check-circle-fill' : x.sebagian ? 'bi-hourglass-split' : 'bi-circle';
+        const col = x.info ? 'var(--text-3)' : x.ok ? 'var(--teal)' : x.sebagian ? 'var(--amber)' : 'var(--text-3)';
+        return '<button class="row" style="gap:10px;text-align:left;cursor:pointer;background:none;border:0;padding:4px 0;color:inherit;width:100%" data-act="ck-go" data-go="' + esc(x.go) + '" data-tab="' + esc(x.tab || '') + '" data-filter="' + esc(x.filter || '') + '"><i class="bi ' + ic + '" style="color:' + col + ';font-size:18px"></i><div class="grow"><div class="fw6">' + esc(x.judul) + '</div><div class="xs muted">' + esc(x.ket) + (!x.ok && x.saran ? ' · ' + esc(x.saran) : '') + '</div></div><i class="bi bi-chevron-right muted"></i></button>';
+      }).join('') + '</div></div>';
+  }).catch(function () { box.innerHTML = ''; });
+}
+ACT['ck-go'] = function (el) { const p = {}; if (el.dataset.tab) p.tab = el.dataset.tab; if (el.dataset.filter) p.filter = el.dataset.filter; navigateTo(el.dataset.go, p); };
+/** Peta kerja BK: dua alur yang saling terhubung. Setiap kotak membuka menu terkait. */
+function petaBK() {
+  const alur = function (judul, ket, langkah) {
+    return '<div class="mt-12"><div class="fw7">' + judul + '</div><div class="xs muted">' + ket + '</div><div class="peta mt-8">' + langkah.map(function (l, i) {
+      return (i ? '<span class="peta-ar"><i class="bi bi-arrow-right"></i></span>' : '') + '<button class="peta-box" data-act="ck-go" data-go="' + l[2] + '" data-tab="' + (l[3] || '') + '"><span class="step-n sm">' + (i + 1) + '</span><b>' + l[0] + '</b><span class="xs muted">' + l[1] + '</span></button>';
+    }).join('') + '</div></div>';
+  };
+  return '<div class="card pad"><h3><i class="bi bi-diagram-3" style="color:var(--indigo)"></i> Peta kerja Guru BK</h3>' +
+    alur('A. Siklus program BK (terencana)', 'Dikerjakan berurutan setiap tahun ajaran.', [['Asesmen', 'Sebar AKPD/DCM', 'instrumen'], ['Analisis kebutuhan', 'Dari hasil instrumen', 'program', 'kebutuhan'], ['Program', 'Tahunan & semester', 'program', 'program'], ['RPL', 'Rencana tiap kegiatan', 'program', 'program'], ['Layanan', 'Catat tiap layanan', 'layanan'], ['Laporan', 'Evaluasi & pelaksanaan', 'program', 'rekap']]) +
+    alur('B. Alur kasus (responsif, kolaborasi guru)', 'Dimulai dari laporan guru atau deteksi pola.', [['Laporan guru', 'Kejadian / pola bolos', 'kasus'], ['Tinjau', 'Baca & beri tanggapan', 'kasus'], ['Tangani', 'Sendiri atau dirujuk', 'kasus'], ['Layanan responsif', 'Konseling, konsultasi', 'layanan'], ['Tindak lanjut', 'Pantau & tinjau ulang', 'kasus'], ['Selesai', 'Tutup kasus', 'kasus']]) +
+    '<div class="xs muted mt-12">Data alur B otomatis masuk ke laporan pelaksanaan pada alur A (komponen Responsif).</div></div>';
+}
+
+// ── Kotak "Apa ini dan kapan dipakai?" pada halaman kerja BK ──
+const BANTU = {
+  kasus: { r: ['guru_bk'], t: 'Rujukan & Kasus — apa ini dan kapan dipakai?', p: ['Semua laporan guru dan rujukan masuk ke sini. Tinjau laporan berstatus "Pembinaan Guru" agar guru pelapor mendapat umpan balik, tangani yang dirujuk, lalu catat tindak lanjutnya sampai Selesai.'],
+    st: [['Baru', 'Laporan/rujukan masuk, belum ditangani.'], ['Pembinaan Guru', 'Guru sudah membina sendiri; BK cukup meninjau dan memantau.'], ['Diproses', 'Sedang ditangani Guru BK.'], ['Dalam Layanan BK', 'Murid sedang mengikuti layanan (konseling dll.).'], ['Ditangani Wali Kelas', 'Dilimpahkan ke wali kelas dengan tanggal tinjau.'], ['Menunggu Konfirmasi BK', 'Wali kelas selesai; BK mengonfirmasi atau mengambil kembali.'], ['Dipantau', 'Penanganan selesai, perkembangan masih diamati.'], ['Eskalasi', 'Diteruskan ke waka/kesiswaan.'], ['Selesai', 'Kasus ditutup.']] },
+  layanan: { r: ['guru_bk'], t: 'Layanan BK — apa ini dan kapan dipakai?', p: ['Catat setiap layanan yang Anda berikan, baik terencana (layanan dasar, peminatan) maupun responsif (konseling, konsultasi, kunjungan rumah, konferensi kasus). Pilih komponennya dengan benar: data ini otomatis menjadi bahan laporan pelaksanaan dan kemajuan program.', 'Isi konseling bersifat rahasia dan hanya terlihat oleh Guru BK.'] },
+  program: { r: ['guru_bk'], t: 'Program BK — apa ini dan kapan dipakai?', p: ['Urutannya: Analisis kebutuhan (dari hasil instrumen) → Program tahunan & semester → RPL tiap kegiatan → Rekap & laporan di akhir semester.', 'Isi realisasi setelah kegiatan dilaksanakan agar laporan pelaksanaan terisi otomatis.'] },
+  instrumen: { r: ['guru_bk'], t: 'Instrumen BK — apa ini dan kapan dipakai?', p: ['Sebar instrumen (AKPD, DCM, sosiometri, atau buatan sendiri) di awal tahun ajaran atau saat dibutuhkan. Murid mengisi dengan kode akses dan NIS, tanpa akun.', 'Hasilnya menjadi dasar analisis kebutuhan dan program BK.'] }
+};
+function sisipBantu(page) {
+  const b = BANTU[page];
+  if (!b || !b.r.some(hasRole)) return;
+  const head = $('#app-container .page-head');
+  if (!head || $('#app-container .bantu')) return;
+  let terbuka = true;
+  try { terbuka = localStorage.getItem('sk_bantu_' + page) !== '0'; } catch (e) { /* abaikan */ }
+  head.insertAdjacentHTML('afterend', '<details class="bantu card pad mb-16"' + (terbuka ? ' open' : '') + ' data-p="' + page + '"><summary><i class="bi bi-question-circle"></i> ' + esc(b.t) + '</summary>' +
+    b.p.map(function (x) { return '<p class="xs mt-8">' + esc(x) + '</p>'; }).join('') +
+    (b.st ? '<div class="bantu-st mt-12">' + b.st.map(function (x) { return '<div>' + chipStatus(x[0]) + '<span class="xs">' + esc(x[1]) + '</span></div>'; }).join('') + '</div>' : '') + '</details>');
+  const d = $('#app-container .bantu');
+  d.addEventListener('toggle', function () { try { localStorage.setItem('sk_bantu_' + page, d.open ? '1' : '0'); } catch (e) { /* abaikan */ } });
+}
+
+// ── Rekap rapat kelas & cetak garis waktu banyak murid ──
+PAGES.rapat = function (params, tok) {
+  return apiC('rapat.kelas', { id_kelas: params.id_kelas || '', dari: params.dari || '', sampai: params.sampai || '' }).then(function (r) {
+    if (stale(tok)) return;
+    P.rp = r; P.rpPilih = {};
+    r.rows.forEach(function (x) { if (x.perhatian) P.rpPilih[x.id] = 1; });
+    rpGambar();
+  });
+};
+function rpGambar() {
+  const r = P.rp;
+  const n = function (v, warn) { return v ? '<b' + (warn ? ' style="color:var(--rose)"' : '') + '>' + v + '</b>' : '<span class="muted">0</span>'; };
+  let h = pageHead('Rapat & pertimbangan', 'Rekap Rapat Kelas', 'Data satu kelas untuk rapat semester, kenaikan kelas, atau pembahasan kasus. Murid yang perlu perhatian ditandai dan sudah dicentang untuk dicetak garis waktunya.', '<button class="btn" data-act="rp-cetak"><i class="bi bi-printer"></i> Cetak rekap</button><button class="btn primary" data-act="rp-cetak-gw"><i class="bi bi-file-earmark-person"></i> Cetak garis waktu terpilih</button>');
+  h += '<div class="card pad"><form id="f-rp" class="form-grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">' +
+    fld({ name: 'id_kelas', label: 'Kelas', type: 'select', opts: r.kelas.map(function (k) { return { v: k.id, l: k.nama }; }), value: r.idKelas }) +
+    fld({ name: 'dari', label: 'Dari', type: 'date', value: r.dari, maxv: S.today }) + fld({ name: 'sampai', label: 'Sampai', type: 'date', value: r.sampai, maxv: S.today }) +
+    '<div class="field"><label>&nbsp;</label><button class="btn dark" type="submit"><i class="bi bi-funnel"></i> Terapkan</button></div></form></div>';
+  h += '<div class="card mt-16"><div class="card-head"><div><h3>' + esc(r.namaKelas) + ' · ' + r.rows.length + ' murid</h3><div class="xs muted">Wali kelas: ' + esc(r.wali || '-') + ' · ' + esc(fTgl(r.dari)) + ' s.d. ' + esc(fTgl(r.sampai)) + ' · ' + r.perhatian + ' murid perlu perhatian</div></div><label class="row xs" style="gap:6px"><input type="checkbox" id="rp-semua"> Pilih semua</label></div>' +
+    '<div class="tbl-wrap"><table class="tbl rp-tbl"><thead><tr><th></th><th>Nama</th><th>Hadir harian</th><th>S / I / A / T</th><th>Hadir mapel</th><th>Alpa mapel</th><th>Kasus (aktif)</th>' + (r.poinAktif ? '<th>Poin</th>' : '') + '<th>Layanan BK</th><th>Kontak ortu</th><th>Pola</th></tr></thead><tbody>' +
+    r.rows.map(function (x) {
+      return '<tr' + (x.perhatian ? ' class="rp-perhatian"' : '') + '><td><input type="checkbox" class="rp-cb" data-id="' + esc(x.id) + '"' + (P.rpPilih[x.id] ? ' checked' : '') + '></td><td><a href="#" class="fw6" data-act="open-murid" data-id="' + esc(x.id) + '">' + esc(x.nama) + '</a><div class="xs muted">' + esc(x.nis) + '</div></td>' +
+        '<td>' + (x.harian === null ? '-' : x.harian + '%') + '</td><td class="xs">' + x.hS + ' / ' + x.hI + ' / ' + n(x.hA, true) + ' / ' + x.hT + '</td><td>' + (x.mapel === null ? '-' : x.mapel + '%') + '</td><td>' + n(x.mA, true) + '</td>' +
+        '<td>' + x.kasus + (x.aktif ? ' (' + n(x.aktif, true) + ')' : '') + '</td>' + (r.poinAktif ? '<td>' + (x.poin === null ? '-' : x.poin) + (x.tahap ? '<div class="xs muted">' + esc(x.tahap) + '</div>' : '') + '</td>' : '') +
+        '<td>' + x.layanan + '</td><td>' + x.kontak + '</td><td class="xs">' + (x.pola ? '<span class="chip lv-' + esc(x.pola.level) + '">' + esc(x.pola.level) + '</span> ' + esc(x.pola.teks) : '-') + '</td></tr>';
+    }).join('') + '</tbody></table></div><div class="xs muted pad">Layanan BK hanya dihitung jumlahnya; isi konseling tidak ditampilkan. Persentase hadir = hadir + terlambat.</div></div>';
+  $('#app-container').innerHTML = h;
+  $('#f-rp').addEventListener('submit', function (e) { e.preventDefault(); const d = formData(e.target); navigateTo('rapat', d, true); });
+  $('#rp-semua').addEventListener('change', function (e) { $$('.rp-cb').forEach(function (c) { c.checked = e.target.checked; P.rpPilih[c.dataset.id] = e.target.checked ? 1 : 0; }); });
+  $$('.rp-cb').forEach(function (c) { c.addEventListener('change', function () { P.rpPilih[c.dataset.id] = c.checked ? 1 : 0; }); });
+}
+ACT['rp-cetak'] = function () {
+  const r = P.rp;
+  siapKop().then(function () {
+    const html = '<div class="pr-doc">' + kopCetak({}) + '<h2 class="pr-title">REKAP DATA MURID UNTUK RAPAT KELAS</h2><div class="pr-sub">Kelas ' + esc(r.namaKelas) + ' · Periode ' + esc(tglPanjang(r.dari)) + ' s.d. ' + esc(tglPanjang(r.sampai)) + '</div>' +
+      '<table class="pr-tbl"><thead><tr><th>No</th><th>Nama</th><th>NIS</th><th>Hadir harian</th><th>S</th><th>I</th><th>A</th><th>T</th><th>Alpa mapel</th><th>Kasus</th>' + (r.poinAktif ? '<th>Poin</th>' : '') + '<th>Layanan BK</th><th>Kontak ortu</th><th>Catatan pola</th></tr></thead><tbody>' +
+      r.rows.map(function (x, i) { return '<tr' + (x.perhatian ? ' style="background:#FFF7ED"' : '') + '><td>' + (i + 1) + '</td><td>' + esc(x.nama) + '</td><td>' + esc(x.nis) + '</td><td>' + (x.harian === null ? '-' : x.harian + '%') + '</td><td>' + x.hS + '</td><td>' + x.hI + '</td><td>' + x.hA + '</td><td>' + x.hT + '</td><td>' + x.mA + '</td><td>' + x.kasus + (x.aktif ? ' (' + x.aktif + ' aktif)' : '') + '</td>' + (r.poinAktif ? '<td>' + (x.poin === null ? '-' : x.poin) + '</td>' : '') + '<td>' + x.layanan + '</td><td>' + x.kontak + '</td><td>' + esc(x.pola ? x.pola.teks : '') + '</td></tr>'; }).join('') +
+      '</tbody></table><p class="pr-ket">Baris berwarna = murid yang perlu perhatian. Dokumen internal sekolah; isi konseling tidak dicantumkan.</p>' +
+      ttdCetak(ttdOrang('Wali Kelas', r.wali), ttdOrang('Guru BK', hasRole('guru_bk') ? S.user.nama : '', hasRole('guru_bk') ? S.user.nip : '')) + '</div>';
+    cetakHtml(html, { judul: 'Rekap rapat kelas ' + r.namaKelas, landscape: true });
+  });
+};
+ACT['rp-cetak-gw'] = function (el) {
+  const ids = Object.keys(P.rpPilih || {}).filter(function (k) { return P.rpPilih[k]; });
+  if (!ids.length) { toast('Centang dulu murid yang akan dicetak garis waktunya.', 'err'); return; }
+  pilihVersiCetak(function (versi) {
+    run(el, Promise.all([siapKop(), api('riwayat.banyak', { ids: ids.slice(0, 40) })])).then(function (res) {
+      const ok = res[1].filter(function (d) { return d && d.murid; });
+      const gagal = res[1].length - ok.length;
+      if (!ok.length) { toast('Tidak ada garis waktu yang dapat dicetak.', 'err'); return; }
+      cetakHtml(ok.map(function (d) { return gwDok(d, versi, P.rp.dari, P.rp.sampai); }).join(''), { judul: 'Garis waktu ' + ok.length + ' murid' + (gagal ? ' (' + gagal + ' dilewati)' : '') });
+    }).catch(fail);
+  });
+};
+
+// ── Cetak garis waktu satu murid (dari halaman Garis Waktu) ──
+function pilihVersiCetak(lanjut, periode) {
+  const m = openModal({
+    title: 'Cetak garis waktu', sub: 'Pilih untuk siapa lembar ini dicetak',
+    body: '<div class="col gap-8"><label class="sec row" style="gap:10px;cursor:pointer"><input type="radio" name="gw-v" value="internal" checked><div><b>Internal sekolah</b><div class="xs muted">Lengkap untuk rapat guru/BK: nama pencatat dan catatan tindak lanjut.</div></div></label>' +
+      '<label class="sec row" style="gap:10px;cursor:pointer"><input type="radio" name="gw-v" value="ortu"><div><b>Untuk orang tua</b><div class="xs muted">Bahasa netral, tanpa nama guru (diganti perannya) dan tanpa catatan internal BK. Periksa uraian kejadian sebelum diserahkan bila menyebut murid lain.</div></div></label></div>' +
+      (periode ? '<div class="form-grid c2 mt-12">' + fld({ name: 'dari', id: 'gw-dari', label: 'Dari', type: 'date', value: periode.dari, maxv: S.today }) + fld({ name: 'sampai', id: 'gw-sampai', label: 'Sampai', type: 'date', value: periode.sampai, maxv: S.today }) + '</div>' : '') +
+      '<p class="xs muted mt-12">Isi konseling tidak pernah dicetak; hanya tercantum bahwa layanan pernah diberikan.</p>',
+    foot: '<button class="btn" data-close>Batal</button><button class="btn primary" id="gw-ok"><i class="bi bi-printer"></i> Cetak</button>'
+  });
+  $('#gw-ok', m.el).addEventListener('click', function () {
+    const v = ($('input[name=gw-v]:checked', m.el) || {}).value || 'internal';
+    const d = periode ? { dari: $('#gw-dari', m.el).value, sampai: $('#gw-sampai', m.el).value } : null;
+    m.close(); lanjut(v, d);
+  });
+}
+function semesterIni() {
+  const th = String(S.cfg.tahunAjaran || '').split('/'), a = +th[0], b = +th[1];
+  const r = S.cfg.semester === 'Genap' && b ? { dari: b + '-01-01', sampai: b + '-06-30' } : a ? { dari: a + '-07-01', sampai: a + '-12-31' } : { dari: addD(S.today, -180), sampai: S.today };
+  if (r.sampai > S.today) r.sampai = S.today;
+  return r;
+}
+const GW_RINGKAS = { absensi: 1, harian: 1 }, GW_ORTU_TIDAK = { tinjau: 1, instrumen: 1, permintaan: 1, monitoring: 1 };
+function gwDok(d, versi, dari, sampai) {
+  const m = d.murid, r = d.ringkas, ortu = versi === 'ortu';
+  dari = dari || addD(S.today, -180); sampai = sampai || S.today;
+  const ev = d.timeline.filter(function (e) { return e.tanggal >= dari && e.tanggal <= sampai && !(e.tipe in GW_RINGKAS) && !(ortu && e.tipe in GW_ORTU_TIDAK); })
+    .sort(function (a, b) { return (a.tanggal + (a.ts || '')) < (b.tanggal + (b.ts || '')) ? -1 : 1; }); // kronologis
+  const rb = (d.rekapBulan || []).filter(function (x) { return x.bulan >= dari.substr(0, 7) && x.bulan <= sampai.substr(0, 7); });
+  const ab = r.absenHarian || {};
+  const isi = function (e) {
+    if (e.tipe === 'layanan_privasi' || e.tipe === 'layanan') return 'Layanan bimbingan dan konseling' + (e.meta && !ortu ? ' (' + e.meta + ')' : '');
+    if (ortu && e.tipe === 'rujukan') return 'Ditindaklanjuti oleh Guru BK.';
+    return e.isi || '';
+  };
+  const oleh = function (e) { return ortu ? (TIPE_LABEL[e.tipe === 'layanan_privasi' ? 'layanan' : e.tipe] || '') : (e.oleh || ''); };
+  return '<div class="pr-doc pr-break">' + kopCetak({}) + '<h2 class="pr-title">' + (ortu ? 'CATATAN PERKEMBANGAN MURID' : 'GARIS WAKTU MURID (INTERNAL)') + '</h2>' +
+    '<div class="pr-sub">Periode ' + esc(tglPanjang(dari)) + ' s.d. ' + esc(tglPanjang(sampai)) + '</div>' +
+    '<div class="pr-kls"><span>Nama: <b>' + esc(m.nama) + '</b> · NIS ' + esc(m.nis) + '</span><span>Kelas: ' + esc(m.kelas) + ' · Wali kelas: ' + esc(m.wali || '-') + (m.guruWali ? ' · Guru wali: ' + esc(m.guruWali) : '') + '</span></div>' +
+    '<div class="pr-h3">Ringkasan</div><table class="pr-tbl"><thead><tr><th>Bulan</th><th>Hari tercatat</th><th>Kehadiran</th><th>Sakit</th><th>Izin</th><th>Alpa</th><th>Terlambat</th><th>Alpa per mapel</th></tr></thead><tbody>' +
+    (rb.length ? rb.map(function (x) { return '<tr><td>' + esc(blnPanjang(x.bulan)) + '</td><td>' + x.hari + '</td><td>' + (x.hadir === null ? '-' : x.hadir + '%') + '</td><td>' + x.S + '</td><td>' + x.I + '</td><td>' + x.A + '</td><td>' + x.T + '</td><td>' + x.alpaMapel + '</td></tr>'; }).join('') : '<tr><td colspan="8">Belum ada data kehadiran pada periode ini.</td></tr>') + '</tbody></table>' +
+    '<p class="pr-ket">Laporan kejadian: ' + r.laporan + ' (' + r.laporanAktif + ' masih ditangani) · Layanan BK diikuti: ' + r.layanan + ' · Kontak orang tua: ' + d.komunikasi.length + (r.poin ? ' · Poin tata tertib: ' + r.poin.B + (r.poin.tahap ? ' (' + esc(r.poin.tahap.n) + ')' : '') : '') + (r.pola && !ortu ? ' · Pola kehadiran: ' + esc(r.pola) : '') + '</p>' +
+    '<div class="pr-h3">Catatan peristiwa</div><table class="pr-tbl"><thead><tr><th style="width:80px">Tanggal</th><th style="width:150px">Peristiwa</th><th>Uraian</th>' + '<th style="width:110px">' + (ortu ? 'Pihak' : 'Oleh') + '</th></tr></thead><tbody>' +
+    (ev.length ? ev.map(function (e) { return '<tr><td>' + esc(fTgl(e.tanggal)) + '</td><td>' + esc(ortu && e.tipe === 'layanan_privasi' ? 'Layanan BK' : e.judul) + '</td><td>' + esc(isi(e)) + '</td><td>' + esc(oleh(e)) + '</td></tr>'; }).join('') : '<tr><td colspan="4">Tidak ada catatan peristiwa pada periode ini.</td></tr>') + '</tbody></table>' +
+    '<p class="pr-ket">' + (ortu ? 'Lembar ini disusun dari catatan sekolah untuk dibicarakan bersama orang tua/wali.' : 'Dokumen internal sekolah. Isi konseling tidak dicantumkan.') + ' Absensi per sesi diringkas per bulan.</p>' +
+    ttdCetak(ortu ? ttdOrang('Orang tua/wali murid', '') : ttdOrang('Wali Kelas', m.wali), ttdOrang(hasRole('guru_bk') ? 'Guru BK' : hasRole('wali_kelas') ? 'Wali Kelas' : 'Guru', S.user.nama, S.user.nip)) + '</div>';
+}
+ACT['gw-cetak'] = function () {
+  const d = P.rwd; if (!d) return;
+  pilihVersiCetak(function (versi, per) {
+    siapKop().then(function () { cetakHtml(gwDok(d, versi, per.dari, per.sampai), { judul: 'Garis waktu ' + d.murid.nama }); });
+  }, semesterIni());
+};
+ACT['rw-rapat'] = function () { navigateTo('rapat', P.rwd && P.rwd.murid ? { id_kelas: P.rwd.murid.id_kelas || '' } : {}); };
+
+// ── Lapor kejadian: draf otomatis & ingat cara penanganan ──
+function lapDrafKey() { return 'sk_lapdraf_' + (S.user ? S.user.email : ''); }
+function lapDrafSimpan() {
+  const f = $('#f-lap'); if (!f || !P.lap) return;
+  const d = formData(f);
+  const ada = (d.kronologi || '').trim() || (d.tindakan || '').trim() || (d.alasan || '').trim();
+  try {
+    if (!ada) { localStorage.removeItem(lapDrafKey()); return; }
+    localStorage.setItem(lapDrafKey(), JSON.stringify({ t: Date.now(), d: d, kat: P.lap.kategori, urg: P.lap.urgensi, mode: P.lap.mode, murids: (P.lap.murids || []).map(function (m) { return { id: m.id, nama: m.nama, kelas: m.kelas, id_kelas: m.id_kelas, nis: m.nis }; }) }));
+  } catch (e) { /* abaikan */ }
+}
+function lapDrafAmbil() {
+  try { const o = JSON.parse(localStorage.getItem(lapDrafKey()) || 'null'); if (o && Date.now() - o.t < 864e5) return o; localStorage.removeItem(lapDrafKey()); } catch (e) { /* abaikan */ }
+  return null;
+}
+function lapDrafHapus() { try { localStorage.removeItem(lapDrafKey()); } catch (e) { /* abaikan */ } }
+function lapSetelahRender(params) {
+  const f = $('#f-lap'); if (!f) return;
+  const kr = $('#f_kronologi');
+  if (kr && !$('#lap-dikte')) kr.insertAdjacentHTML('afterend', '<div class="xs muted" id="lap-dikte" style="margin-top:4px"><i class="bi bi-lightbulb"></i> Tips: di HP, ketuk ikon mikrofon pada keyboard untuk mendikte kronologi, lalu rapikan seperlunya.</div>');
+  const dr = P.lap.draf && !P.lap.drafDipakai ? P.lap.draf : null;
+  if (dr) {
+    P.lap.drafDipakai = true;
+    Object.keys(dr.d || {}).forEach(function (k) { const el = f.elements[k]; if (el && dr.d[k] && el.type !== 'file') el.value = dr.d[k]; });
+    if (kr && $('#kr-count')) $('#kr-count').textContent = kr.value.length + ' / 5000';
+    f.insertAdjacentHTML('afterbegin', '<div class="note info" id="lap-draf-note"><i class="bi bi-clock-history"></i><div>Draf laporan yang belum terkirim dipulihkan. <a href="#" data-act="lap-draf-buang">Buang draf</a></div></div>');
+  }
+  let tm = null;
+  f.addEventListener('input', function () { clearTimeout(tm); tm = setTimeout(lapDrafSimpan, 600); });
+}
+ACT['lap-draf-buang'] = function () { lapDrafHapus(); P.lap.drafDipakai = true; navigateTo('lapor', {}, true); };
 
 'use strict';
 // ── Jalankan ──
