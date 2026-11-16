@@ -1070,3 +1070,14 @@ details.bantu:not([open]) { padding-top: 10px; padding-bottom: 10px; }
 .jdw-tbl { min-width: 640px; } .jdw-tbl td { padding: 4px; } .jdw-tbl .select { min-height: 34px; padding: 4px 6px; font-size: 12.5px; }
 .rp-tbl { min-width: 900px; } .rp-tbl td { vertical-align: middle; } .rp-tbl td:nth-child(2) { min-width: 180px; } .rp-tbl td:nth-child(4) { white-space: nowrap; } .rp-tbl td:last-child { min-width: 220px; }
 .rp-perhatian td { background: color-mix(in srgb, var(--amber) 9%, var(--card)); }
+
+/* v1.13: arahan untuk guru, daftar garis waktu */
+.chip.arahan-chip { background: color-mix(in srgb, var(--indigo) 14%, var(--card)); color: var(--indigo); border-color: color-mix(in srgb, var(--indigo) 30%, transparent); cursor: pointer; vertical-align: middle; }
+.chip.arahan-chip:hover { background: color-mix(in srgb, var(--indigo) 22%, var(--card)); }
+.arh-item { border-left: 3px solid var(--indigo); }
+.arh-item.arh-lewat { border-left-color: var(--border); opacity: .8; }
+.arh-minta { font-weight: 600; line-height: 1.5; }
+.arh-minta .bi { color: var(--indigo); }
+.arh-balas { background: var(--card-2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; font-size: 13px; }
+.arh-pilih { max-height: 200px; overflow: auto; display: grid; gap: 6px; padding: 8px; border: 1px solid var(--border); border-radius: 10px; }
+.rw-sep { padding: 10px 16px 4px; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-3); }
