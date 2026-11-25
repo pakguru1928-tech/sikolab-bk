@@ -10,7 +10,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Font dimuat tanpa menahan tampilan: aplikasi langsung tampil dengan font sistem, lalu berganti saat font siap. -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=1.15">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
   <div id="topload" aria-hidden="true"></div>
@@ -36,8 +38,45 @@
   <div id="toasts" aria-live="polite"></div>
 
   <script src="js/config.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/formisi.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/api.js?v=1.15"></script>
+  <script src="js/formisi.js?v=1.15"></script>
+  <script src="js/core.js?v=1.15"></script>
+  <script src="js/shell.js?v=1.15"></script>
+  <script src="js/pages/10_beranda.js?v=1.15"></script>
+  <script src="js/pages/11_absensi.js?v=1.15"></script>
+  <script src="js/pages/12_lapor.js?v=1.15"></script>
+  <script src="js/pages/13_kasus.js?v=1.15"></script>
+  <script src="js/pages/14_layanan.js?v=1.15"></script>
+  <script src="js/pages/15_riwayat.js?v=1.15"></script>
+  <script src="js/pages/16_ortu.js?v=1.15"></script>
+  <script src="js/pages/17_laporan.js?v=1.15"></script>
+  <script src="js/pages/18_grafik_akun.js?v=1.15"></script>
+  <script src="js/pages/19_arsip.js?v=1.15"></script>
+  <script src="js/pages/20_program.js?v=1.15"></script>
+  <script src="js/pages/21_instrumen.js?v=1.15"></script>
+  <script src="js/pages/22_admin.js?v=1.15"></script>
+  <script src="js/pages/23_kelas.js?v=1.15"></script>
+  <script src="js/pages/24_panduan.js?v=1.15"></script>
+  <script src="js/pages/25_sistem.js?v=1.15"></script>
+  <script src="js/pages/26_arahan.js?v=1.15"></script>
+  <script src="js/pages/30_cetak_qr.js?v=1.15"></script>
+  <script src="js/pages/31_daftar_hadir.js?v=1.15"></script>
+  <script src="js/pages/32_pindai.js?v=1.15"></script>
+  <script src="js/pages/33_kartu.js?v=1.15"></script>
+  <script src="js/pages/34_admin_kehadiran.js?v=1.15"></script>
+  <script src="js/pages/35_temu.js?v=1.15"></script>
+  <script src="js/pages/36_wa.js?v=1.15"></script>
+  <script src="js/pages/37_antrean.js?v=1.15"></script>
+  <script src="js/pages/38_surat.js?v=1.15"></script>
+  <script src="js/pages/39_poin.js?v=1.15"></script>
+  <script src="js/pages/40_guruwali.js?v=1.15"></script>
+  <script src="js/pages/41_rekap_mapel.js?v=1.15"></script>
+  <script src="js/mulai.js?v=1.15"></script>
+  <script>
+    // PWA: berkas tampilan disimpan di perangkat (lihat sw.js). Gagal mendaftar tidak mengganggu aplikasi.
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || /^(localhost|127\.0\.0\.1)$/.test(location.hostname))) {
+      window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () { /* abaikan */ }); });
+    }
+  </script>
 </body>
 </html>
